@@ -57,31 +57,45 @@ class Launcher {
         if (! method_exists($class, $method)) {
             throw new EControllerMethodNotFound($class_path, $method);
         }
-
-        call_user_func(array($class, $method), $params);
+        
+        call_user_func_array(array($class, $method), $params);
     }
 
     public function runControllers (array $controllers_list) {
-        if (isset($controllers_list[$this->service_path_string])) {
-            $full_controller = $controllers_list[$this->service_path_string];
+        $controller = false;
+        $m = [];
+        $params = [];
 
-            if (!is_array($full_controller) || (count($full_controller) < 2) || ((count($full_controller) >= 3) && !is_array($full_controller[2]))) {
+        foreach ($controllers_list as $preg_path => $cntrl) {
+            $preg_path = '/^' . str_replace('/', '\/', $preg_path) . '$/i';
+
+            if (preg_match($preg_path, $this->service_path_string, $m)) {
+                $params = array_slice($m, 1);
+                $controller = $cntrl; 
+                break;
+            }
+        }
+
+        if (false !== $controller) {
+            if (!is_array($controller) || (count($controller) < 2) || ((count($controller) >= 3) && !is_array($controller[2]))) {
                 throw new EControllerPathException("The value must be in format "
                     . "'$this->service_path_string' => [comtroller_class_full_name, controller_method] or "
                     . "'$this->service_path_string' => [comtroller_class_full_name, controller_method, [param1, ...]]"
                 );
             }
-
-            if (!isset($full_controller[2])) {
-                $full_controller[2] = [];
-            }
-
-            $this->runController($full_controller[0], $full_controller[1], $full_controller[2]);
         } else {
-            if (!isset($controllers_list[''])) {
+            if (isset($controllers_list[''])) {
+                $controller = $controllers_list[''];
+            } else {
                 throw new EControllerPathException("Default pacth not found ");
             }
         }
+
+        if (!isset($controller[2])) {
+            $controller[2] = [];
+        }
+
+        $this->runController($controller[0], $controller[1], array_merge($controller[2], $params));
     }
 
     public function runServices() {

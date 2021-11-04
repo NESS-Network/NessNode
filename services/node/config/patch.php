@@ -5,6 +5,7 @@ return [
     'nodes' => ['\services\node\controllers\Node', 'nodes'],
     'services' => ['\services\node\controllers\Node', 'services'],
     'man' => ['\services\node\controllers\Node', 'man'],
-    'test' => ['\services\node\controllers\Node', 'test'],
+    'test/auth' => ['\services\node\controllers\Node', 'testAuthTwoWay'],
+    'test/auth/(\w+)/(\w+)' => ['\services\node\controllers\Node', 'testAuthId'],
     '' => ['\services\node\controllers\Node', 'man'],
 ];
