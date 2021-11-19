@@ -1,10 +1,11 @@
 # Ness node DEMO
 
 This is first version of NESS node with only basic functionality and two services node and prng
+Devblog https://ness-main-dev.medium.com/
 
 ## TODO
 
- * Authentication
+ * Authentication - DONE
  * Ness coin hours
 
 ## Instalation
@@ -27,6 +28,10 @@ if param `result` is `data` then the data is stored in `data` param as array
  * `/node/services` output all available services
  * `/node/nodes` display all nodes found in blockchain
  * `/node/man`display manual
+ * `/node/testAuthId`test authentication by Auth ID
+ * `/node/testAuthTwoWay`test authentication by Two Way Encryption
+
+ Read more about authentication in my devblog https://ness-main-dev.medium.com/authentication-on-ness-nodes-f25e2cda0f0d
 
 ### prng
  * `/prng/seed` output randomly generated seed (regenerated every second)
