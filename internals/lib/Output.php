@@ -42,6 +42,17 @@ class Output {
         echo json_encode($output);
     }
 
+    public static function encrypted(string $data, $sig) {
+        $output = [
+            'result' => 'encrypted',
+            'data' => $data,
+            'sig' => $sig
+        ];
+
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($output);
+    }
+
     public static function text(string $text) {
         header('Content-Type: text/plain; charset=utf-8');
         echo $text;

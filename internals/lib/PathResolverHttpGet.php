@@ -10,12 +10,12 @@ use \internals\lib\interfaces\iPatchResolver;
  */
 class PathResolverHttpGet implements iPatchResolver {
     static public function getPath(): array {
-        $path = '';
-
-        foreach ($_GET as $key => $value) {
-            $path = $key;
-            break;
-        }
+        $path = $_GET['path'];
+        
+        // foreach ($_GET as $key => $value) {
+        //     $path = $key;
+        //     break;
+        // }
 
         return explode('/', $path);
     }

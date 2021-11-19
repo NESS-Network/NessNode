@@ -115,8 +115,35 @@ class Emer {
         }
     }
 
-    // public function auth(string $node_url, $node_nonce, $username, $user_nonce, $user_addr, $auth_id) {
+    public function listUsers(): Array {
+        try {
+            /** @var array $nousersdes  */
+            $users = Emercoin::name_filter('^worm:user:ness:.+', 0, 0, 0, '', 'base64');
+            $result = [];
 
-    // }
+            foreach ($users as $user) {
+                $name = $user['name'];
+                $name = explode(':', $name);
+                $name = array_slice($name, 3);
+                $name = implode(':', $name);
+
+                $value = base64_decode($user['value']);
+                $result[$name] = $value;
+            }
+
+            return $result;
+        }
+        catch (\Exception $exception) {
+            $message = $exception->getMessage();
+            if (strpos($message, 'Can\'t connect to') !== false) {
+                throw new EConnectionError($this->config, $message);
+            } else {
+                throw new \Exception($message);
+            }
+
+            return false;
+        }
+    }
+
 
 }
