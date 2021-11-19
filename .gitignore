@@ -1,1 +1,3 @@
 .git
+services/node/vendor
+services/node/vendor/*
