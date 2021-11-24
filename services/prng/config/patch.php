@@ -1,5 +1,5 @@
 <?php
-
+ 
 return [
     'seed' => ['\services\prng\controllers\Prng', 'seed'],
     'seedb' => ['\services\prng\controllers\Prng', 'seedb'],

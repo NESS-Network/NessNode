@@ -15,9 +15,9 @@ class Prng {
         $files = $config['files'];
 
         $this->seed = $files['seed'];
-        $this->seedb = $files['seedb'];
+        $this->seedb = $files['seed-big'];
         $this->numbers = $files['numbers'];
-        $this->numbersb = $files['numbersb'];
+        $this->numbersb = $files['numbers-big'];
     }
 
     public function seed(): string {
