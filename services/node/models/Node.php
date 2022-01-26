@@ -5,6 +5,12 @@ use modules\emer\Emer;
 use modules\worm\Worm;
 
 class Node {
+    private array $config;
+
+    public function __construct() {
+        $this->config = require '../config/node.php';
+    }
+
     public function getInfo(): Array {
         $emer = new Emer();
         $services = require __DIR__ . '/../../../etc/services.php';

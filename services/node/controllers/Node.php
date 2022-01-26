@@ -7,6 +7,9 @@ use internals\lib\Output;
 use services\node\models\Node as NodeModel;
 use services\node\models\User as UserModel;
 use Base32\Base32;
+use modules\ness\lib\ness;
+use modules\ness\Privateness;
+use modules\ness\lib\StorageJson;
 
 class Node {
     public function info() {
@@ -49,8 +52,7 @@ class Node {
             }
 
             // verify(user_public_key, “node.url-node.nonce-username-user.nonce”, authentication_id)
-            $message = $node_url . '-' . $node_nonce . '-' . $username . '-' . $user['nonce'];
-            $res = sodium_crypto_sign_verify_detached(Base32::decode($id) , $message , base64_decode($user['verify']));
+            $res = Privateness::verifyID($id, $username, $user['nonce'], $user['verify'], $node_url, $node_nonce);
 
             if (true === $res) {
                 Output::message('User auth ID OK');
@@ -68,33 +70,32 @@ class Node {
         $node_config = require '../config/node.php';
         $test_string = "Whoever knows how to take, to defend, the thing, to him belongs property";
 
-        // var_dump($_POST);
+        $username = $_POST['username'];
 
         try {
             $user = new UserModel();
-            $user = $user->findUser($_POST['username']);
+            $user = $user->findUser($username);
 
-            $res = sodium_crypto_sign_verify_detached(Base32::decode($_POST['sig']), $_POST['data'], base64_decode($user['verify']));
+            if (false === $user) {
+                Output::error('User "' . $username . '" not found');
+                return false;
+            }
+
+            $res = Privateness::verify2way($_POST['data'], $_POST['sig'], $user['verify']);
 
             if (false === $res) {
                 Output::error('Signature check FAILED');
                 return false;
             }
 
-            $keypair = sodium_crypto_box_keypair_from_secretkey_and_publickey(base64_decode($node_config['private']), base64_decode($node_config['public']));
-            $decrypted = sodium_crypto_box_seal_open(base64_decode($_POST['data']), $keypair);
+            $decrypted = Privateness::decrypt2way($_POST['data'], $node_config['private'], $node_config['public']);
 
             if ('The state calls its own violence law, but that of the individual, crime.' === $decrypted) {
-                // Output::message("Signature check OK\nDecrypt OK");
-                $data = sodium_crypto_box_seal($test_string, base64_decode($user['public']));
-                $data = base64_encode($data);
-                $keypair = sodium_crypto_box_keypair_from_secretkey_and_publickey(base64_decode($node_config['private']), base64_decode($node_config['verify']));
-                $sig = sodium_crypto_sign_detached($data, $keypair);
+                $data = $test_string;
+                $sig = '';
 
-                // $res = sodium_crypto_sign_verify_detached($sig, $data, base64_decode($node_config['verify']));
-                // var_dump($node_config['verify'], $res);
-
-                $sig = Base32::encode($sig);
+                Privateness::encrypt2way($data, $sig, $user['public'], $node_config['private'], $node_config['verify']);
+                
                 Output::encrypted($data, $sig);
                 return true;
             } else {
@@ -106,6 +107,191 @@ class Node {
             Output::error($e->getMessage());
             return false;
         }
+    }
+
+    public function getAddress(string $username, $id) {
+        $node_config = require '../config/node.php';
+        $node_url = $node_config['url'];
+        $node_nonce = $node_config['nonce'];
+
+        try {
+            $user = new UserModel();
+            $user = $user->findUser($username);
+
+            if (false === $user) {
+                Output::error('User "' . $username . '" not found');
+                return false;
+            }
+
+            // verify(user_public_key, “node.url-node.nonce-username-user.nonce”, authentication_id)
+            $res = Privateness::verifyID($id, $username, $user['nonce'], $user['verify'], $node_url, $node_nonce);
+
+            if (true === $res) {
+                $json = new StorageJson();
+                $pr = new Privateness($json);
+                $addr = $pr->getUserAddress($username);
+                Output::data(['address' => $addr]);
+            } else {
+                Output::error('User auth ID FAILED');
+            }
+
+        } catch (\Exception | \Error $e) {
+            Output::error($e->getMessage());
+            return false;
+        }
+    }
+
+    public function balance(string $username, $id) {
+        $node_config = require '../config/node.php';
+        $node_url = $node_config['url'];
+        $node_nonce = $node_config['nonce'];
+
+        try {
+            $user = new UserModel();
+            $user = $user->findUser($username);
+
+            if (false === $user) {
+                Output::error('User "' . $username . '" not found');
+                return false;
+            }
+
+            // verify(user_public_key, “node.url-node.nonce-username-user.nonce”, authentication_id)
+            $res = Privateness::verifyID($id, $username, $user['nonce'], $user['verify'], $node_url, $node_nonce);
+
+            if (true === $res) {
+                $json = new StorageJson();
+                $pr = new Privateness($json);
+                $balance = $pr->balance($username);
+        
+                Output::data(['balance' => $balance]);
+            } else {
+                Output::error('User auth ID FAILED');
+            }
+
+        } catch (\Exception $e) {
+            Output::error($e->getMessage());
+            return false;
+        }
+    }
+
+    public function userinfo(string $username, $id) {
+        $node_config = require '../config/node.php';
+        $node_url = $node_config['url'];
+        $node_nonce = $node_config['nonce'];
+
+        try {
+            $user = new UserModel();
+            $user = $user->findUser($username);
+
+            if (false === $user) {
+                Output::error('User "' . $username . '" not found');
+                return false;
+            }
+
+            // verify(user_public_key, “node.url-node.nonce-username-user.nonce”, authentication_id)
+            $res = Privateness::verifyID($id, $username, $user['nonce'], $user['verify'], $node_url, $node_nonce);
+
+            if (true === $res) {
+                $json = new StorageJson();
+                $pr = new Privateness($json);
+                $userinfo = $pr->userinfo($username);
+        
+                Output::data(['userinfo' => $userinfo]);
+            } else {
+                Output::error('User auth ID FAILED');
+            }
+
+        } catch (\Exception $e) {
+            Output::error($e->getMessage());
+            return false;
+        }
+    }
+
+    public function withdraw() {
+        $node_config = require '../config/node.php';
+
+        $username = $_POST['username'];
+
+        // Verification
+
+        try {
+            $user = new UserModel();
+            $user = $user->findUser($username);
+
+            if (false === $user) {
+                Output::error('User "' . $username . '" not found');
+                return false;
+            }
+
+            $res = Privateness::verify2way($_POST['data'], $_POST['sig'], $user['verify']);
+
+            if (false === $res) {
+                Output::error('Signature check FAILED');
+                return false;
+            }
+
+            $decrypted = Privateness::decrypt2way($_POST['data'], $node_config['private'], $node_config['public']);
+            $wdata = json_decode($decrypted, true);
+
+            if (!is_array($wdata)) {
+                Output::error("Signature check OK\nDecrypt FAILED");
+                return false;
+            }
+
+        } catch (\Exception $e) {
+            Output::error($e->getMessage());
+            return false;
+        }
+
+        // Sending coins and hours
+
+        $coins = (float) $wdata['coins'];
+        $hours = (float) $wdata['hours'];
+        $to_addr = (string) $wdata['to_addr'];
+
+        try {
+
+            $json = new StorageJson();
+            $pr = new Privateness($json);
+
+            $balance = $pr->balance($username);
+
+            if ($coins > $balance['coins']) {
+                throw new \Exception("You want to withdraw $coins coins this is more than available ("
+                    . $balance['coins'] . ")");
+            }
+
+            if ($hours > $balance['available']) {
+                throw new \Exception("You want to withdraw $hours coin - hours this is more than available ("
+                    . $balance['available'] . ")");
+            }
+
+            $pr->withdrawUser($username, $coins, $hours, $to_addr);
+
+            // Output::message("Signature check OK\nDecrypt OK");
+
+            $data = "The user $username withdrawed $coins coins and $hours hours to $to_addr";
+            $sig = '';
+
+            Privateness::encrypt2way($data, $sig, $user['public'], $node_config['private'], $node_config['verify']);
+
+            Output::encrypted($data, $sig);
+
+        } catch (\Exception $e) {
+            Output::error($e->getMessage());
+            return false;
+        }
+
+        return true;
+    }
+
+    public function testNess() {
+        $json = new StorageJson();
+        $pr = new Privateness($json);
+        var_dump( $pr->getUserAddress('master') );
+        var_dump($pr->balance('master'));
+        var_dump($pr->getUserAddress('ZXC'));
+        var_dump($pr->balance('ZXC'));
     }
 
     public function pub() {

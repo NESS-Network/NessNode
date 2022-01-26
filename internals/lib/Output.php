@@ -8,6 +8,7 @@ class Output {
             'info' => $info
         ];
 
+        ob_clean();
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode($output);
     }
@@ -18,6 +19,7 @@ class Output {
             'data' => $data
         ];
 
+        ob_clean();
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode($output);
     }
@@ -28,6 +30,7 @@ class Output {
             'error' => $message
         ];
 
+        ob_clean();
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode($output);
     }
@@ -38,6 +41,7 @@ class Output {
             'message' => $message
         ];
 
+        ob_clean();
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode($output);
     }
@@ -49,16 +53,19 @@ class Output {
             'sig' => $sig
         ];
 
+        ob_clean();
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode($output);
     }
 
     public static function text(string $text) {
+        ob_clean();
         header('Content-Type: text/plain; charset=utf-8');
         echo $text;
     }
 
     public static function textJson(string $text) {
+        ob_clean();
         header('Content-Type: application/json; charset=utf-8');
         echo $text;
     }
