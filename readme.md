@@ -52,6 +52,15 @@ to_addr - external address, where to withdraw
 
  Read more about authentication in my devblog https://ness-main-dev.medium.com/authentication-on-ness-nodes-f25e2cda0f0d
  Read more about payment system https://ness-main-dev.medium.com/counter-random-payment-12813584826f
+ 
+### Config files
+##### ~/.ness
+* `emer.json` Connection to emercoin RPC
+* `ness.json` Connection to PrivateNess daemon
+* `node.json` Node params
+* `payments.json`Payments list
+* `prng.json` PRNG service config
+* `users.json` Users list - users address, counter and random-hours
 
 ### prng
  * `/prng/seed` output randomly generated seed (regenerated every second)
@@ -61,7 +70,7 @@ to_addr - external address, where to withdraw
 
 ## Testing
 ##### create-user.php
-Create test user (without using blockchain)
+Create test user ( in `user.json` without using blockchain)
 Usage:  `php create-username.php <username> [address]` (address is optional)
 ##### payment-test.php
 Usage: `php test.php <username>`pay for single hour (similar as exec/cron.php but for single user)
