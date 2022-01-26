@@ -32,12 +32,14 @@ All data is sent in HTTP POST or GET request and returned in JSON format
  * `http://node-url/node/man`display manual
  * `http://node-url/node/testAuthId/username/auth-id`test authentication by Auth ID
  * `http://node-url/node/testAuthTwoWay`test authentication by Two Way Encryption
- * `http://node-url/node/get-address/username/auth-id` Get user payment address or return existing one (Auth ID)
-Returned data: `{data: {address: 784y5t4787ytw487yt}}
+ * `http://node-url/node/get-address/username/auth-id` 
+ 
+ Get user payment address or return existing one (Auth ID)
+ Returned data: `{data: {address: 784y5t4787ytw487yt}}
  * `http://node-url/node/userinfo/username/auth-id`Display all info about user (Auth ID)
-Returned data: `{data: {'addr': 'hw9gw4rogj', 'counter': 0, 'balance': {'coins': 5000, 'hours': 82689, 'fee': 8269, 'available': 74420}, 'is_active': True}}`
-is_active - can user use this node (has enough hours to pay the node)
-counter - how many hours user was active (was using this node)
+ Returned data: `{data: {'addr': 'hw9gw4rogj', 'counter': 0, 'balance': {'coins': 5000, 'hours': 82689, 'fee': 8269, 'available': 74420}, 'is_active': True}}`
+ is_active - can user use this node (has enough hours to pay the node)
+ counter - how many hours user was active (was using this node)
 * `http://node-url/node/balance/username/auth-id`Get user current balance (Auth ID)
 Returned data: `{data: {balance: {'coins': 5000, 'hours': 82689, 'fee': 8269, 'available': 74420}}}`
 hours - total hours
