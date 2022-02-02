@@ -57,8 +57,8 @@ to_addr - external address, where to withdraw
 
 *Error format*: `{error: "Error text message"}`
 
- Read more about authentication in my devblog https://ness-main-dev.medium.com/authentication-on-ness-nodes-f25e2cda0f0d
- Read more about payment system https://ness-main-dev.medium.com/counter-random-payment-12813584826f
+ Read more about authentication in my [dev-blog]( https://ness-main-dev.medium.com/authentication-on-ness-nodes-f25e2cda0f0d)
+ Read more about [payment system]( https://ness-main-dev.medium.com/counter-random-payment-12813584826f)
  
 ### Config files
 ##### ~/.ness
@@ -76,8 +76,71 @@ to_addr - external address, where to withdraw
  * `/prng/numbersb` output randomly generated numbers (1000) (regenerated every second)
 
 ## Testing
-##### create-user.php
-Create test user ( in `user.json` without using blockchain)
+You can generate test users (without blockchain) to test [Counter Random Payments](https://ness-main-dev.medium.com/counter-random-payment-12813584826f)
+
+##### exec/create-user.php
+Create test user ( in `users.json` without using blockchain)
 Usage:  `php create-username.php <username> [address]` (address is optional)
-##### payment-test.php
+##### exec/payment-test.php
 Usage: `php test.php <username>`pay for single hour (similar as exec/cron.php but for single user)
+
+##### *user.json*  file structure
+```
+{"master":{"addr":"e56he5jh5e7j6rjr6jr7","counter":2,"random_hours":7219},
+"User":{"addr":"e56he5jh5e7j6rjr6jr7","counter":2,"random_hours":7568},
+"ZZZ":{"addr":"e56he5jh5e7j6rjr6jr7","counter":2,"random_hours":7112},
+"123":{"addr":"e56he5jh5e7j6rjr6jr7","counter":2,"random_hours":7038},
+"zxc":{"addr":"e56he5jh5e7j6rjr6jr7","counter":2,"random_hours":7495},
+"user":{"addr":"e56he5jh5e7j6rjr6jr7","counter":0,"random_hours":7403}}
+```
+
+*master* - master user ( master-user="master" param from WORM file )
+*ZZZ* - username
+*addr* - address in Ness blockchain
+*counter* - amount of hours user was active, every hour the counter gets incremented (if user is active and the user payed *tariff* amount of Hours successfully)
+*random_hours* - next payment time in hours ( if counter = random_hours then payment() )
+
+##### node WORM file
+*worm:node:ness:http://my-ness-node.net*
+```xml
+<worm>
+        <node type="ness" url="http://my-ness-node.net" nonce="Q3khjWopdxiLpPweVo6+BQ=="    verify="Q13IcdGM6CLjH+zZ/EaPgK+2C8igkh8/x0aEgZVVfTw=" public="dJplXPV7cqsC518qg0bJXoWknhqkIZQNTnksVHaSq2E=" master-user="master-user-name" tariff="24" tags="Test,My test node,Hello world">
+                <!-- Here tags may be different for each type of node or each node -->
+        </node>
+</worm>
+
+```
+* url - url of the node
+* verify - verify public key
+* public - encryption public key
+* nonce - salt
+* master-user - Master user name (the user being payed every hour for node usage)
+* tarif -how mush Hours the node cost for one hour
+
+##### user WORM file
+*worm:user:ness:user*
+```xml
+<worm>
+        <user type="ness" nonce="R04rQis5hP2EfILpAGuU8Q==" tags="Hello World,test">
+                <keys>
+                        <key public="rGSy2GhojuHX+4bgE5CtRZnP2OpR7+RJebqGDCNVnlY="  verify="n9SUQ3w4x+YBggUqlN/e26lopaE2rCLmOZK9Cg2zRtc=" current="current" />
+                        <key public="61RxrG8CIOSDfcjLcq+y/dhhMgeyY9I7NdDZTaoQwUs="  verify="FhnIDQZ1XDOaspV4/k+ZADSe5IqkUQCWH53C42qC3XQ="/>
+                        <key public="0DThVjUslwgoZuclc0ueKZYl7r+4rfmUw2bWShyQYU0="  verify="wsvQ8HXjG3P4v9+xhnp1Nc8XhLCTb0WbK3cq9aOCHZk="/>
+                        <key public="QVXITMyfQLg5tVc+ElpVX0FAN3+/nv9nGZDUIVUbiwo="  verify="UZz4azAIqO2WiNMkgkgCMu38Sw8WEOco8C6y3R2Lyuk="/>
+                        <key public="8QHSSL2Hgsm6wfSFaFD+6ODW770Pr8+rdABwGKBo8WA="  verify="xQHkzmniUIDTCFWWOpA9tYzmlF+AmBHCPH5mMSZF+Bw="/>
+                        <key public="EaD4ufAdkRlW7psqAhL+DrGmIVQvR+R9DiaTKzoO4Eg="  verify="wkkDp9PZWj6Dq+65Xjs42zCwkz5BWJvzQt4TE9kIc7o="/>
+                        <key public="kTsf7ZKy0urSGklAxLJWbHOjFtCgFlXSEq4dHDl4GEw="  verify="A2bw4W8CNr2NXBsyDLIrobJh997u90ziaSX1HJTyJNA="/>
+                        <key public="HZGLPz9PukobSM6ALz7PxqBYunimLkqAoa2WwAGrDB8="  verify="gNz9z6ZOcXJgDm1BWbRrCkz4HWJ3EB4IKAO4u/imjTU="/>
+                        <key public="rYsglIKg2ZQf4yfmqjH70vaC0wCjO5mXAdHPwaWcOX4="  verify="1iC81pdum1JRgQ/9j9ceu5QsPVo5VpUjAmwY6LQPM+4="/>
+                </keys>
+                <!-- Here tags may be different for each type of user -->
+        </user>
+</worm>
+```
+* verify - verify public key
+* public - encryption public key
+* nonce - salt
+
+## Links
+* [Ness node tester]( [https://github.com/NESS-Network/NessNodeTester](https://github.com/NESS-Network/NessNodeTester))
+* [Dev blog](  https://ness-main-dev.medium.com)
