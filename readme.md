@@ -101,6 +101,7 @@ Usage: `php test.php <username>`pay for single hour (similar as exec/cron.php bu
 *random_hours* - next payment time in hours ( if counter = random_hours then payment() )
 
 ##### node WORM file
+*Emercoin blockchain record*
 *worm:node:ness:http://my-ness-node.net*
 ```xml
 <worm>
@@ -118,6 +119,7 @@ Usage: `php test.php <username>`pay for single hour (similar as exec/cron.php bu
 * tarif -how mush Hours the node cost for one hour
 
 ##### user WORM file
+*Emercoin blockchain record*
 *worm:user:ness:user*
 ```xml
 <worm>
