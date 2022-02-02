@@ -102,7 +102,7 @@ Usage: `php test.php <username>`pay for single hour (similar as exec/cron.php bu
 
 ##### node WORM file
 *Emercoin blockchain record*
-*worm:node:ness:http://my-ness-node.net*
+`worm:node:ness:http://my-ness-node.net`
 ```xml
 <worm>
         <node type="ness" url="http://my-ness-node.net" nonce="Q3khjWopdxiLpPweVo6+BQ=="    verify="Q13IcdGM6CLjH+zZ/EaPgK+2C8igkh8/x0aEgZVVfTw=" public="dJplXPV7cqsC518qg0bJXoWknhqkIZQNTnksVHaSq2E=" master-user="master-user-name" tariff="24" tags="Test,My test node,Hello world">
@@ -120,7 +120,7 @@ Usage: `php test.php <username>`pay for single hour (similar as exec/cron.php bu
 
 ##### user WORM file
 *Emercoin blockchain record*
-*worm:user:ness:user*
+`worm:user:ness:user`
 ```xml
 <worm>
         <user type="ness" nonce="R04rQis5hP2EfILpAGuU8Q==" tags="Hello World,test">
