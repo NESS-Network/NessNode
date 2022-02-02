@@ -38,26 +38,37 @@ All data is sent in HTTP POST or GET request and returned in JSON format
  * `http://node-url/node/userinfo/username/auth-id`
  
  Display all info about user (Auth ID)
+ 
  Returned data: `{data: {'addr': 'hw9gw4rogj', 'counter': 0, 'balance': {'coins': 5000, 'hours': 82689, 'fee': 8269, 'available': 74420}, 'is_active': True}}`
+ 
  is_active - can user use this node (has enough hours to pay the node)
+ 
  counter - how many hours user was active (was using this node)
 * `http://node-url/node/balance/username/auth-id`
 
 Get user current balance (Auth ID)
+
 Returned data: `{data: {balance: {'coins': 5000, 'hours': 82689, 'fee': 8269, 'available': 74420}}}`
+
 hours - total hours
+
 fee - fee substracted from hours
+
 available - available hours for withdraw
  * `http://node-url/node/withdraw`
  
  Withdraw funds (Two Way Encryption)
+ 
  Input data (POST): `{data: {coins: 1, hours: 111, to_addr: 495u4ugjhgt}, username: user, sig: 54e65e5j}`
+ 
 sig - signature of data
+
 to_addr - external address, where to withdraw
 
 *Error format*: `{error: "Error text message"}`
 
  Read more about authentication in my [dev-blog]( https://ness-main-dev.medium.com/authentication-on-ness-nodes-f25e2cda0f0d)
+ 
  Read more about [payment system]( https://ness-main-dev.medium.com/counter-random-payment-12813584826f)
  
 ### Config files
@@ -94,11 +105,11 @@ Usage: `php test.php <username>`pay for single hour (similar as exec/cron.php bu
 "user":{"addr":"e56he5jh5e7j6rjr6jr7","counter":0,"random_hours":7403}}
 ```
 
-*master* - master user ( master-user="master" param from WORM file )
-*ZZZ* - username
-*addr* - address in Ness blockchain
-*counter* - amount of hours user was active, every hour the counter gets incremented (if user is active and the user payed *tariff* amount of Hours successfully)
-*random_hours* - next payment time in hours ( if counter = random_hours then payment() )
+* *master* - master user ( master-user="master" param from WORM file )
+* *ZZZ* - username
+* *addr* - address in Ness blockchain
+* *counter* - amount of hours user was active, every hour the counter gets incremented (if user is active and the user payed *tariff* amount of Hours successfully)
+* *random_hours* - next payment time in hours ( if counter = random_hours then payment() )
 
 ##### node WORM file
 *Emercoin blockchain record*
