@@ -8,8 +8,9 @@ use services\prng\models\Prng as PrngModel;
 /**
  *      !!! Warning !!!
  *      Change systemd configuration for apache
- *      in httpd.service or apache2.service
- *      /lib/systemd/apache2.service the *** PrivateTmp=false ***
+ *      in /lib/systemd/apache2.service 
+ *      or /usr/lib/systemd/system/httpd.service (Arch)
+ *      the *** PrivateTmp=false ***
  */
 
 class Prng {

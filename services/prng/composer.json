@@ -1,0 +1,16 @@
+{
+    "name": "privateness/prng-service",
+    "description": "PRNG service for Privateness Node",
+    "type": "project",
+    "license": "AGPLv3",
+    "authors": [
+        {
+            "name": "Alex",
+            "email": "chosenone111@protonmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "christian-riesen/base32": "1.x-dev"
+    }
+}

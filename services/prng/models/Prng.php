@@ -12,12 +12,11 @@ class Prng {
 
     public function __construct() {
         $config = require __DIR__ . '/../config/prng.php';
-        $files = $config['files'];
-
-        $this->seed = $files['seed'];
-        $this->seedb = $files['seed-big'];
-        $this->numbers = $files['numbers'];
-        $this->numbersb = $files['numbers-big'];
+        
+        $this->seed = $config['seed'];
+        $this->seedb = $config['seed-big'];
+        $this->numbers = $config['numbers'];
+        $this->numbersb = $config['numbers-big'];
     }
 
     public function seed(): string {
