@@ -1,4 +1,5 @@
 <?php
+
 namespace modules\ness;
 
 use Base32\Base32;
@@ -19,7 +20,8 @@ use modules\ness\exceptions\EMasterUserInsuficientFunds;
  *
  * @author Aleksej Sokolov <aleksej000@gmail.com>,<chosenone111@protonmail.com>
  */
-class Privateness {
+class Privateness
+{
 
     private array $config;
     private array $node_config;
@@ -35,7 +37,8 @@ class Privateness {
      *
      * @param Storage $storage
      */
-    public function __construct(Storage $storage) {
+    public function __construct(Storage $storage)
+    {
         $this->config = require 'config/ness.php';
         $this->node_config = require 'config/node.php';
 
@@ -73,8 +76,9 @@ class Privateness {
      *
      * @return int
      */
-    private function getRandomCounterHours() {
-        return $this->period - $this->delta + rand(0, $this->delta*2);
+    private function getRandomCounterHours()
+    {
+        return $this->period - $this->delta + rand(0, $this->delta * 2);
     }
 
     /**
@@ -82,7 +86,8 @@ class Privateness {
      *
      * @return string
      */
-    public function getMasterUser() {
+    public function getMasterUser()
+    {
         return $this->node_config['master-user'];
     }
 
@@ -92,7 +97,8 @@ class Privateness {
      * @param string $username
      * @return boolean
      */
-    public function isMasterUser(string $username) {
+    public function isMasterUser(string $username)
+    {
         return $username === $this->getMasterUser();
     }
 
@@ -102,7 +108,8 @@ class Privateness {
      * @param string $username
      * @return void
      */
-    public function getUserAddress(string $username) {
+    public function getUserAddress(string $username)
+    {
         if ($this->isMasterUser($username)) {
             if (empty($this->users[$username])) {
                 $ness = new ness();
@@ -143,9 +150,10 @@ class Privateness {
      * @param string $node_nonce
      * @return bool
      */
-    public static function verifyID(string $authID, string $username, string $user_nonce, string $user_verify, string $node_url, string $node_nonce) {
+    public static function verifyID(string $authID, string $username, string $user_nonce, string $user_verify, string $node_url, string $node_nonce)
+    {
         $message = $node_url . '-' . $node_nonce . '-' . $username . '-' . $user_nonce;
-        return sodium_crypto_sign_verify_detached(Base32::decode($authID) , $message , base64_decode($user_verify));
+        return sodium_crypto_sign_verify_detached(Base32::decode($authID), $message, base64_decode($user_verify));
     }
 
     /**
@@ -156,7 +164,8 @@ class Privateness {
      * @param string $user_verify
      * @return bool
      */
-    public static function verify2way(string $data, string $sig, string $user_verify) {
+    public static function verify2way(string $data, string $sig, string $user_verify)
+    {
         sodium_crypto_sign_verify_detached(Base32::decode($sig), $data, base64_decode($user_verify));
     }
 
@@ -168,7 +177,8 @@ class Privateness {
      * @param string $node_pub
      * @return string|false
      */
-    public static function decrypt2way(string $data, string $node_private, string $node_pub) {
+    public static function decrypt2way(string $data, string $node_private, string $node_pub)
+    {
         $keypair = sodium_crypto_box_keypair_from_secretkey_and_publickey(base64_decode($node_private), base64_decode($node_pub));
         return sodium_crypto_box_seal_open(base64_decode($data), $keypair);
     }
@@ -183,7 +193,8 @@ class Privateness {
      * @param string $node_verify
      * @return void
      */
-    public static function encrypt2way(string &$data, string &$sig, string $user_pub, string $node_priv, string $node_verify) {
+    public static function encrypt2way(string &$data, string &$sig, string $user_pub, string $node_priv, string $node_verify)
+    {
         $data = sodium_crypto_box_seal($data, base64_decode($user_pub));
         $data = base64_encode($data);
         $keypair = sodium_crypto_box_keypair_from_secretkey_and_publickey(base64_decode($node_priv), base64_decode($node_verify));
@@ -200,14 +211,15 @@ class Privateness {
      * @param integer $hours
      * @return void
      */
-    public function withdraw(string $from_username, string $to_addr, float $coins, int $hours) {
+    public function withdraw(string $from_username, string $to_addr, float $coins, int $hours)
+    {
         $ness = new ness();
         // Check coin ammount
         $balance = $this->balance($from_username);
-        if ( ($balance['coins'] < ($coins + 0.001)) || ($balance['hours'] < $hours) ) {
+        if (($balance['coins'] < ($coins + 0.001)) || ($balance['hours'] < $hours)) {
             throw new EUserInsuficientFunds($from_username, $balance['coins'], $balance['hours'], $coins, $hours);
         }
-        
+
         // Send coins and hours
         return $ness->send($this->users[$from_username], $to_addr, $coins, $hours);
     }
@@ -221,7 +233,8 @@ class Privateness {
      * @param integer $hours
      * @return void
      */
-    public function send(string $from_addr, string $to_addr, float $coins, int $hours) {
+    public function send(string $from_addr, string $to_addr, float $coins, int $hours)
+    {
         $ness = new ness();
         $result = $ness->send($from_addr, $to_addr, $coins, $hours);
         self::$output = ness::$output;
@@ -235,7 +248,8 @@ class Privateness {
      * @param string $username
      * @return void
      */
-    public function balance(string $username) {
+    public function balance(string $username)
+    {
         $ness = new ness();
 
         // Check user existance
@@ -257,7 +271,8 @@ class Privateness {
      * @param string $username
      * @return void
      */
-    public function userinfo(string $username) {
+    public function userinfo(string $username)
+    {
         $ness = new ness();
 
         // Check user existance
@@ -279,7 +294,8 @@ class Privateness {
      * @param string $username
      * @return boolean
      */
-    public function userExists(string $username): bool {
+    public function userExists(string $username): bool
+    {
         return (isset($this->users[$username]) && isset($this->users[$username]['addr']));
     }
 
@@ -289,7 +305,8 @@ class Privateness {
      * @param string $username
      * @return boolean
      */
-    public function isActive(string $username): bool {
+    public function isActive(string $username): bool
+    {
         //Check user existance
         if (!isset($this->users[$username]) || !isset($this->users[$username]['addr'])) {
             throw new EUserDontExist($username);
@@ -306,7 +323,8 @@ class Privateness {
      * @param string $username
      * @return integer
      */
-    public function userCounter(string $username): int {
+    public function userCounter(string $username): int
+    {
         //Check user existance
         if (!isset($this->users[$username]) || !isset($this->users[$username]['addr'])) {
             throw new EUserDontExist($username);
@@ -321,7 +339,8 @@ class Privateness {
      * @param string $username
      * @return integer
      */
-    public function userRandomHours(string $username): int {
+    public function userRandomHours(string $username): int
+    {
         //Check user existance
         if (!isset($this->users[$username]) || !isset($this->users[$username]['addr'])) {
             throw new EUserDontExist($username);
@@ -336,13 +355,14 @@ class Privateness {
      * @param string $username
      * @return boolean
      */
-    public function payUser(string $username): bool {
+    public function payUser(string $username): bool
+    {
         $ness = new ness();
 
         // Check existance of master user
         $master = $this->getMasterUser();
 
-        if (!isset($this->users[$master]) || !isset($this->users[$master]['addr']))  {
+        if (!isset($this->users[$master]) || !isset($this->users[$master]['addr'])) {
             throw new EMasterUserDontExist($master);
         }
 
@@ -361,7 +381,7 @@ class Privateness {
             $this->storage->writePayment($username, date('Y-m-d H:i:s'), $counter, $coin_hours, $txid);
             $this->payments = $this->storage->readPayments();
             self::$output = ness::$output;
-            
+
             return true;
         } else {
             $counter++;
@@ -381,12 +401,13 @@ class Privateness {
      * @param string $to_addr
      * @return boolean
      */
-    public function withdrawUser(string $username, float $coins, int $hours, string $to_addr): bool {
+    public function withdrawUser(string $username, float $coins, int $hours, string $to_addr): bool
+    {
         $ness = new ness();
         $addr = $this->users[$username]['addr'];
 
         $ness->send($addr, $to_addr, $coins, $hours);
-        
+
         return true;
     }
 
@@ -395,13 +416,18 @@ class Privateness {
      *
      * @return void
      */
-    public function payUsers() {
+    public function payUsers()
+    {
         foreach ($this->users as $username => $user) {
             $this->payUser($username);
         }
     }
 
-    public static function nodeInfo(): Array {
+    /**
+     * All info about node from blockchain
+     */
+    public static function nodeInfo(): array
+    {
         $emer = new Emer();
         $services = require __DIR__ . '/../../../etc/services.php';
         $info = $services['node'];
@@ -410,10 +436,14 @@ class Privateness {
         return $info;
     }
 
-    public static function nodesList(): Array {
+    /**
+     * List all nodes from blockchain
+     */
+    public static function nodesList(): array
+    {
         $emer = new Emer();
         $result = [];
-        
+
         $nodes = $emer->listNodes();
 
         foreach ($nodes as $name => $value) {
@@ -425,9 +455,13 @@ class Privateness {
         return $result;
     }
 
-    public static function nodesFind(string $node_name): Array|bool {
+    /**
+     * Find node in blockchain
+     */
+    public static function nodesFind(string $node_name): array|bool
+    {
         $emer = new Emer();
-        
+
         $node = $emer->findNode($node_name);
         if (Worm::isNode($node['value'])) {
             return Worm::parseNode($node['value']);
@@ -436,10 +470,14 @@ class Privateness {
         return false;
     }
 
-    public static function usersList(): Array {
+    /**
+     * List all users from blockchain
+     */
+    public static function usersList(): array
+    {
         $emer = new Emer();
         $result = [];
-        
+
         $users = $emer->listUsers();
         var_dump($users);
         foreach ($users as $username => $value) {
@@ -451,9 +489,13 @@ class Privateness {
         return $result;
     }
 
-    public static function usersFind(string $username): Array|bool {
+    /**
+     * Find user in blockchain
+     */
+    public static function usersFind(string $username): array|bool
+    {
         $emer = new Emer();
-        
+
         $user = $emer->findUser($username);
         if (Worm::isUser($user['value'])) {
             return Worm::parseUser($user['value']);
@@ -461,5 +503,4 @@ class Privateness {
 
         return false;
     }
-
 }

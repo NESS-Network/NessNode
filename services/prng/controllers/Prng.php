@@ -1,7 +1,8 @@
 <?php
+
 namespace Services\prng\controllers;
 
-use modules\emer\Emer;
+use Exception;
 use modules\worm\Worm;
 use modules\ness\Privateness;
 use \modules\ness\lib\StorageJson;
@@ -18,70 +19,127 @@ use services\prng\models\Prng as PrngModel;
  *      the *** PrivateTmp=false ***
  */
 
-class Prng {
-    public function seed(string $username, $id) {
-        $node_config = require '../config/node.php';
-        $node_url = $node_config['url'];
-        $node_nonce = $node_config['nonce'];
-        $emer = new Emer();
-        $prng = new PrngModel();
-        $json = new StorageJson();
-        $pr = new Privateness($json);
+class Prng
+{
+    private string $node_url;
+    private string $node_nonce;
+    private PrngModel $prng;
+    private Privateness $privateness;
 
+    public function __construct()
+    {
+        $node_config = require '../config/node.php';
+        $this->node_url = $node_config['url'];
+        $this->node_nonce = $node_config['nonce'];
+        $this->prng = new PrngModel();
+        $json = new StorageJson();
+        $this->privateness = new Privateness($json);
+    }
+
+    public function seed(string $username, $id)
+    {
         try {
-            $emer = new Emer();
-            $user = $emer->findUser($username);
+            $user = Privateness::usersFind($username);
 
             if (false === $user) {
                 Output::error('User "' . $username . '" not found');
                 return false;
-            } else {
-                $user = Worm::parseUser($user['value']);
             }
 
-            if (!$pr->isActive($username)) {
-                Output::error('User is inactive');
+            if (!$this->privateness->isActive($username)) {
+                Output::error('User "' . $username . '" is inactive');
                 return false;
             }
 
-            $res = Privateness::verifyID($id, $username, $user['nonce'], $user['verify'], $node_url, $node_nonce);
+            $res = Privateness::verifyID($id, $username, $user['nonce'], $user['verify'], $this->node_url, $this->node_nonce);
 
             if (true === $res) {
-                Output::data(['seed' => $prng->seed()]);
+                Output::data(['seed' => $this->prng->seed()]);
             } else {
                 Output::error('User auth ID FAILED');
             }
-        } catch (EFileNotFound $exception) {
+        } catch (\Throwable $exception) {
+            Output::error($exception->getMessage());
+        }
+    }
+
+    public function seedb(string $username, $id)
+    {
+        try {
+            $user = Privateness::usersFind($username);
+
+            if (false === $user) {
+                Output::error('User "' . $username . '" not found');
+                return false;
+            }
+
+            if (!$this->privateness->isActive($username)) {
+                Output::error('User "' . $username . '" is inactive');
+                return false;
+            }
+
+            $res = Privateness::verifyID($id, $username, $user['nonce'], $user['verify'], $this->node_url, $this->node_nonce);
+
+            if (true === $res) {
+                Output::data(['seedb' => $this->prng->seedb()]);
+            } else {
+                Output::error('User auth ID FAILED');
+            }
+        } catch (\Throwable $exception) {
             Output::error($exception->getMessage());
         }
     }
     
-    public function seedb() {
-        $prng = new PrngModel();
-
+    public function numbers(string $username, $id)
+    {
         try {
-            Output::data(['seed' => $prng->seedb()]);
-        } catch (EFileNotFound $exception) {
+            $user = Privateness::usersFind($username);
+
+            if (false === $user) {
+                Output::error('User "' . $username . '" not found');
+                return false;
+            }
+
+            if (!$this->privateness->isActive($username)) {
+                Output::error('User "' . $username . '" is inactive');
+                return false;
+            }
+
+            $res = Privateness::verifyID($id, $username, $user['nonce'], $user['verify'], $this->node_url, $this->node_nonce);
+
+            if (true === $res) {
+                Output::data(['numbers' => $this->prng->numbers()]);
+            } else {
+                Output::error('User auth ID FAILED');
+            }
+        } catch (\Throwable $exception) {
             Output::error($exception->getMessage());
         }
     }
 
-    public function numbers() {
-        $prng = new PrngModel();
-
+    public function numbersb(string $username, $id)
+    {
         try {
-            Output::data(['numbers' => $prng->numbers()]);
-        } catch (EFileNotFound $exception) {
-            Output::error($exception->getMessage());
-        }
-    }
+            $user = Privateness::usersFind($username);
 
-    public function numbersb() {
-        $prng = new PrngModel();
+            if (false === $user) {
+                Output::error('User "' . $username . '" not found');
+                return false;
+            }
 
-        try {
-            Output::data(['numbers' => $prng->numbersb()]);
-        } catch (EFileNotFound $exception) {
+            if (!$this->privateness->isActive($username)) {
+                Output::error('User "' . $username . '" is inactive');
+                return false;
+            }
+
+            $res = Privateness::verifyID($id, $username, $user['nonce'], $user['verify'], $this->node_url, $this->node_nonce);
+
+            if (true === $res) {
+                Output::data(['numbersb' => $this->prng->numbersb()]);
+            } else {
+                Output::error('User auth ID FAILED');
+            }
+        } catch (\Throwable $exception) {
             Output::error($exception->getMessage());
         }
     }

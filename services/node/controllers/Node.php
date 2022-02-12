@@ -53,7 +53,7 @@ class Node {
                 Output::error('User auth ID FAILED');
             }
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Output::error($e->getMessage());
             return false;
         }
@@ -95,7 +95,7 @@ class Node {
                 return false;
             }
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Output::error($e->getMessage());
             return false;
         }
@@ -126,7 +126,7 @@ class Node {
                 Output::error('User auth ID FAILED');
             }
 
-        } catch (\Exception | \Error $e) {
+        } catch (\Throwable | \Error $e) {
             Output::error($e->getMessage());
             return false;
         }
@@ -158,7 +158,7 @@ class Node {
                 Output::error('User auth ID FAILED');
             }
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Output::error($e->getMessage());
             return false;
         }
@@ -190,7 +190,7 @@ class Node {
                 Output::error('User auth ID FAILED');
             }
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Output::error($e->getMessage());
             return false;
         }
@@ -265,7 +265,7 @@ class Node {
 
             Output::encrypted($data, $sig);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Output::error($e->getMessage());
             return false;
         }
