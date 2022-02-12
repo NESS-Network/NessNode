@@ -11,7 +11,7 @@ Devblog https://ness-main-dev.medium.com/
 ## Instalation
 
  * Apache
- * PHP 7+
+ * PHP 7.4+
  * Emercoin daemon with JsonRPC connection configured in `~/.emercoin/emercoin.conf` and `modules/emer/config/emercoin.php`
  * Clone PRNG from https://github.com/NESS-Network/PyUHEPRNG and run `python server.py` to launch random number generator
  * Change systemd configuration for apache in `/lib/systemd/apache2.service` or in `/lib/systemd/system/httpd.service` change the `PrivateTmp=false` to make `/tmp/*` directory readable
@@ -30,12 +30,20 @@ All data is sent in HTTP POST or GET request and returned in JSON format
  * `http://node-url/node/services` output all available services
  * `http://node-url/node/nodes` display all nodes found in blockchain
  * `http://node-url/node/man`display manual
+ * `http://node-url/node/pub`display node public key (encryption key)
+ * `http://node-url/node/verify`display node verify key (sign/verify key)
  * `http://node-url/node/testAuthId/username/auth-id`test authentication by Auth ID
  * `http://node-url/node/testAuthTwoWay`test authentication by Two Way Encryption
- * `http://node-url/node/get-address/username/auth-id` 
- Get user payment address or return existing one (Auth ID)
- Returned data: `{data: {address: 784y5t4787ytw487yt}}
- * `http://node-url/node/userinfo/username/auth-id`
+ * `http://node-url/node/get-address/username/auth-id`
+   Get user payment address or return existing one (Auth ID)
+   Returned data: `{data: {address: 784y5t4787ytw487yt}}
+ * `http://node-url/node/userinfo/username/auth-id` - user data from blockchain
+ * `http://node-url/node/balance/username/auth-id` - user balance
+ * `http://node-url/node/withdraw` - Withdraw coins and hours to external address (Two Way Encryption)
+ * `http://node-url/prng/seed/username/auth-id` - Random generated SEED (PRNG service https://github.com/NESS-Network/PyUHEPRNG)
+ * `http://node-url/prng/seedb/username/auth-id` - Random generated numbers
+ * `http://node-url/prng/numbers/username/auth-id` - Random generated large SEED 
+ * `http://node-url/prng/numbersb/username/auth-id` - Big ammount of random generated numbers
  
  Display all info about user (Auth ID)
  

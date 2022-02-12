@@ -288,6 +288,12 @@ class Node {
         echo trim($node_config['public']);
     }
 
+    public function verify() {
+        $node_config = require '../config/node.php';
+        ob_clean();
+        echo trim($node_config['verify']);
+    }
+
     public function man() {
         Output::text(file_get_contents(__DIR__ . '/../../../etc/manual.txt'));
     }
