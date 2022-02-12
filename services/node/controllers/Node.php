@@ -4,8 +4,6 @@ namespace services\node\controllers;
 use modules\emer\exceptions\EConnectionError;
 use modules\crypto\Crypto;
 use internals\lib\Output;
-use services\node\models\Node as NodeModel;
-use services\node\models\User as UserModel;
 use Base32\Base32;
 use modules\ness\lib\ness;
 use modules\ness\Privateness;
@@ -13,20 +11,16 @@ use modules\ness\lib\StorageJson;
 
 class Node {
     public function info() {
-        $node = new NodeModel();
-        
         try {
-            Output::info($node->getInfo());
+            Output::info(Privateness::nodeInfo());
         } catch (EConnectionError $exception) {
             Output::error('Can not connect to emercoin');
         }
     }
 
     public function nodes() {
-        $node = new NodeModel();
-        
         try {
-            Output::data($node->listNodes());
+            Output::data(Privateness::nodesList());
         } catch (EConnectionError $exception) {
             Output::error('Can not connect to emercoin');
         }
@@ -43,8 +37,7 @@ class Node {
         $node_nonce = $node_config['nonce'];
 
         try {
-            $user = new UserModel();
-            $user = $user->findUser($username);
+            $user = Privateness::usersFind($username);
 
             if (false === $user) {
                 Output::error('User "' . $username . '" not found');
@@ -73,8 +66,7 @@ class Node {
         $username = $_POST['username'];
 
         try {
-            $user = new UserModel();
-            $user = $user->findUser($username);
+            $user = Privateness::usersFind($username);
 
             if (false === $user) {
                 Output::error('User "' . $username . '" not found');
@@ -115,8 +107,7 @@ class Node {
         $node_nonce = $node_config['nonce'];
 
         try {
-            $user = new UserModel();
-            $user = $user->findUser($username);
+            $user = Privateness::usersFind($username);
 
             if (false === $user) {
                 Output::error('User "' . $username . '" not found');
@@ -147,8 +138,7 @@ class Node {
         $node_nonce = $node_config['nonce'];
 
         try {
-            $user = new UserModel();
-            $user = $user->findUser($username);
+            $user = Privateness::usersFind($username);
 
             if (false === $user) {
                 Output::error('User "' . $username . '" not found');
@@ -180,8 +170,7 @@ class Node {
         $node_nonce = $node_config['nonce'];
 
         try {
-            $user = new UserModel();
-            $user = $user->findUser($username);
+            $user = Privateness::usersFind($username);
 
             if (false === $user) {
                 Output::error('User "' . $username . '" not found');
@@ -215,8 +204,7 @@ class Node {
         // Verification
 
         try {
-            $user = new UserModel();
-            $user = $user->findUser($username);
+            $user = Privateness::usersFind($username);
 
             if (false === $user) {
                 Output::error('User "' . $username . '" not found');

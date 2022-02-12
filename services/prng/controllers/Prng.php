@@ -1,6 +1,11 @@
 <?php
 namespace Services\prng\controllers;
 
+use modules\emer\Emer;
+use modules\worm\Worm;
+use modules\ness\Privateness;
+use \modules\ness\lib\StorageJson;
+
 use internals\lib\Output;
 use services\prng\exceptions\EFileNotFound;
 use services\prng\models\Prng as PrngModel;
@@ -14,11 +19,38 @@ use services\prng\models\Prng as PrngModel;
  */
 
 class Prng {
-    public function seed() {
+    public function seed(string $username, $id) {
+        $node_config = require '../config/node.php';
+        $node_url = $node_config['url'];
+        $node_nonce = $node_config['nonce'];
+        $emer = new Emer();
         $prng = new PrngModel();
+        $json = new StorageJson();
+        $pr = new Privateness($json);
 
         try {
-            Output::data(['seed' => $prng->seed()]);
+            $emer = new Emer();
+            $user = $emer->findUser($username);
+
+            if (false === $user) {
+                Output::error('User "' . $username . '" not found');
+                return false;
+            } else {
+                $user = Worm::parseUser($user['value']);
+            }
+
+            if (!$pr->isActive($username)) {
+                Output::error('User is inactive');
+                return false;
+            }
+
+            $res = Privateness::verifyID($id, $username, $user['nonce'], $user['verify'], $node_url, $node_nonce);
+
+            if (true === $res) {
+                Output::data(['seed' => $prng->seed()]);
+            } else {
+                Output::error('User auth ID FAILED');
+            }
         } catch (EFileNotFound $exception) {
             Output::error($exception->getMessage());
         }

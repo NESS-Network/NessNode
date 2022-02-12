@@ -5,6 +5,9 @@ use Base32\Base32;
 use modules\ness\lib\ness as ness;
 use modules\ness\interfaces\Storage;
 
+use modules\emer\Emer;
+use modules\worm\Worm;
+
 use modules\ness\exceptions\EUserDontExist;
 use modules\ness\exceptions\EMasterUserDontExist;
 use modules\ness\exceptions\EUserInsuficientFunds;
@@ -385,7 +388,6 @@ class Privateness {
         $ness->send($addr, $to_addr, $coins, $hours);
         
         return true;
-
     }
 
     /**
@@ -398,4 +400,66 @@ class Privateness {
             $this->payUser($username);
         }
     }
+
+    public static function nodeInfo(): Array {
+        $emer = new Emer();
+        $services = require __DIR__ . '/../../../etc/services.php';
+        $info = $services['node'];
+        $info['emercoin'] = $emer->info();
+
+        return $info;
+    }
+
+    public static function nodesList(): Array {
+        $emer = new Emer();
+        $result = [];
+        
+        $nodes = $emer->listNodes();
+
+        foreach ($nodes as $name => $value) {
+            if (Worm::isNode($value)) {
+                $result[$name] = Worm::parseNode($value);
+            }
+        }
+
+        return $result;
+    }
+
+    public static function nodesFind(string $node_name): Array|bool {
+        $emer = new Emer();
+        
+        $node = $emer->findNode($node_name);
+        if (Worm::isNode($node['value'])) {
+            return Worm::parseNode($node['value']);
+        }
+
+        return false;
+    }
+
+    public static function usersList(): Array {
+        $emer = new Emer();
+        $result = [];
+        
+        $users = $emer->listUsers();
+        var_dump($users);
+        foreach ($users as $username => $value) {
+            if (Worm::isUser($value)) {
+                $result[$username] = Worm::parseUser($value);
+            }
+        }
+
+        return $result;
+    }
+
+    public static function usersFind(string $username): Array|bool {
+        $emer = new Emer();
+        
+        $user = $emer->findUser($username);
+        if (Worm::isUser($user['value'])) {
+            return Worm::parseUser($user['value']);
+        }
+
+        return false;
+    }
+
 }

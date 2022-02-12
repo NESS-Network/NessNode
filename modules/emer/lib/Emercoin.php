@@ -1,8 +1,7 @@
-<?php
-use modules\emer\lib\JsonRpcClient;
-
+<?php 
 namespace modules\emer\lib;
 
+use modules\emer\lib\JsonRpcClient;
 
 /**
  * Emercoin RPC module
