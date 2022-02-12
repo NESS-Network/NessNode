@@ -37,13 +37,7 @@ All data is sent in HTTP POST or GET request and returned in JSON format
  * `http://node-url/node/get-address/username/auth-id`
    Get user payment address or return existing one (Auth ID)
    Returned data: `{data: {address: 784y5t4787ytw487yt}}
- * `http://node-url/node/userinfo/username/auth-id` - user data from blockchain
- * `http://node-url/node/balance/username/auth-id` - user balance
- * `http://node-url/node/withdraw` - Withdraw coins and hours to external address (Two Way Encryption)
- * `http://node-url/prng/seed/username/auth-id` - Random generated SEED (PRNG service https://github.com/NESS-Network/PyUHEPRNG)
- * `http://node-url/prng/seedb/username/auth-id` - Random generated numbers
- * `http://node-url/prng/numbers/username/auth-id` - Random generated large SEED 
- * `http://node-url/prng/numbersb/username/auth-id` - Big ammount of random generated numbers
+ * `http://node-url/node/userinfo/username/auth-id`
  
  Display all info about user (Auth ID)
  
@@ -65,7 +59,7 @@ fee - fee substracted from hours
 available - available hours for withdraw
  * `http://node-url/node/withdraw`
  
- Withdraw funds (Two Way Encryption)
+ Withdraw coins and hours (Two Way Encryption)
  
  Input data (POST): `{data: {coins: 1, hours: 111, to_addr: 495u4ugjhgt}, username: user, sig: 54e65e5j}`
  
@@ -78,6 +72,11 @@ to_addr - external address, where to withdraw
  Read more about authentication in my [dev-blog]( https://ness-main-dev.medium.com/authentication-on-ness-nodes-f25e2cda0f0d)
  
  Read more about [payment system]( https://ness-main-dev.medium.com/counter-random-payment-12813584826f)
+
+  * `http://node-url/prng/seed/username/auth-id` - Random generated SEED (PRNG service https://github.com/NESS-Network/PyUHEPRNG)
+  * `http://node-url/prng/seedb/username/auth-id` - Random generated numbers
+  * `http://node-url/prng/numbers/username/auth-id` - Random generated large SEED 
+  * `http://node-url/prng/numbersb/username/auth-id` - Big ammount of random generated 
  
 ### Config files
 ##### ~/.ness
