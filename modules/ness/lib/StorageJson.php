@@ -10,7 +10,7 @@ class StorageJson implements Storage {
     private string $users_payments_file;
 
     public function __construct() {
-        $this->config = require __DIR__ . '/../config/ness.php';
+        $this->config = require __DIR__ . '/../../../config/ness.php';
         $this->users_addr_file = $this->config['users_addr_file'];
         $this->users_payments_file = $this->config['users_payments_file'];
     }

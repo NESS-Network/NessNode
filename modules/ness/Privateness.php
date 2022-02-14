@@ -39,8 +39,8 @@ class Privateness
      */
     public function __construct(Storage $storage)
     {
-        $this->config = require 'config/ness.php';
-        $this->node_config = require 'config/node.php';
+        $this->config = require __DIR__ . '/../../config/ness.php';
+        $this->node_config = require __DIR__ . '/../../config/node.php';
 
         $this->storage = $storage;
 
@@ -429,7 +429,7 @@ class Privateness
     public static function nodeInfo(): array
     {
         $emer = new Emer();
-        $services = require __DIR__ . '/../../../etc/services.php';
+        $services = require __DIR__ . '/../../etc/services.php';
         $info = $services['node'];
         $info['emercoin'] = $emer->info();
 

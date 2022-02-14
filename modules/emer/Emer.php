@@ -1,4 +1,5 @@
 <?php
+
 namespace modules\emer;
 
 use modules\emer\lib\Emercoin;
@@ -6,15 +7,17 @@ use modules\emer\exceptions\EConnectionError;
 use modules\emer\exceptions\EUserNotFound;
 use modules\emer\exceptions\ENodeNotFound;
 
-class Emer {
+class Emer
+{
 
     private $config;
 
     /**
      * Config initialisation
      */
-    public function __construct() {
-        $this->config = require 'config/emercoin.php';
+    public function __construct()
+    {
+        $this->config = require __DIR__ . '/../../config/emercoin.php';
 
         Emercoin::$username = $this->config['user'];
         Emercoin::$password = $this->config['password'];
@@ -22,11 +25,11 @@ class Emer {
         Emercoin::$port = $this->config['port'];
     }
 
-    public function info(): Array {
+    public function info(): array
+    {
         try {
             return Emercoin::getinfo();
-        }
-        catch (\Exception $exception) {
+        } catch (\Exception $exception) {
             $message = $exception->getMessage();
             if (strpos($message, 'Can\'t connect to') !== false) {
                 throw new EConnectionError($this->config, $message);
@@ -36,15 +39,15 @@ class Emer {
         }
     }
 
-    public function findUser(string $username): Array {
+    public function findUser(string $username): array
+    {
         try {
             /** @var array $user  */
-            $user = Emercoin::name_show('worm:user:ness:'.$username, 'base64');
+            $user = Emercoin::name_show('worm:user:ness:' . $username, 'base64');
             $user['value'] = base64_decode($user['value']);
-            
+
             return $user;
-        }
-        catch (\Exception $exception) {
+        } catch (\Exception $exception) {
             $message = $exception->getMessage();
             if (strpos($message, 'Can\'t connect to') !== false) {
                 throw new EConnectionError($this->config, $message);
@@ -58,10 +61,11 @@ class Emer {
         }
     }
 
-    public function findNode(string $url, bool $showFull = false) {
+    public function findNode(string $url, bool $showFull = false)
+    {
         try {
             /** @var array $node  */
-            $node = Emercoin::name_show('worm:node:ness:'.$url, 'base64');
+            $node = Emercoin::name_show('worm:node:ness:' . $url, 'base64');
 
             if ($showFull) {
                 $node['value'] = base64_decode($node['value']);
@@ -70,8 +74,7 @@ class Emer {
             } else {
                 return base64_decode($node['value']);
             }
-        }
-        catch (\Exception $exception) {
+        } catch (\Exception $exception) {
             $message = $exception->getMessage();
             if (strpos($message, 'Can\'t connect to') !== false) {
                 throw new EConnectionError($this->config, $message);
@@ -85,7 +88,8 @@ class Emer {
         }
     }
 
-    public function listNodes(): Array {
+    public function listNodes(): array
+    {
         try {
             /** @var array $nodes  */
             $nodes = Emercoin::name_filter('^worm:node:ness:.+', 0, 0, 0, '', 'base64');
@@ -102,8 +106,7 @@ class Emer {
             }
 
             return $result;
-        }
-        catch (\Exception $exception) {
+        } catch (\Exception $exception) {
             $message = $exception->getMessage();
             if (strpos($message, 'Can\'t connect to') !== false) {
                 throw new EConnectionError($this->config, $message);
@@ -115,7 +118,8 @@ class Emer {
         }
     }
 
-    public function listUsers(): Array {
+    public function listUsers(): array
+    {
         try {
             /** @var array $nousersdes  */
             $users = Emercoin::name_filter('^worm:user:ness:.+', 0, 0, 0, '', 'base64');
@@ -132,8 +136,7 @@ class Emer {
             }
 
             return $result;
-        }
-        catch (\Exception $exception) {
+        } catch (\Exception $exception) {
             $message = $exception->getMessage();
             if (strpos($message, 'Can\'t connect to') !== false) {
                 throw new EConnectionError($this->config, $message);
@@ -144,6 +147,4 @@ class Emer {
             return false;
         }
     }
-
-
 }

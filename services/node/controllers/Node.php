@@ -1,4 +1,5 @@
 <?php
+
 namespace services\node\controllers;
 
 use modules\emer\exceptions\EConnectionError;
@@ -9,8 +10,10 @@ use modules\ness\lib\ness;
 use modules\ness\Privateness;
 use modules\ness\lib\StorageJson;
 
-class Node {
-    public function info() {
+class Node
+{
+    public function info()
+    {
         try {
             Output::info(Privateness::nodeInfo());
         } catch (EConnectionError $exception) {
@@ -18,7 +21,8 @@ class Node {
         }
     }
 
-    public function nodes() {
+    public function nodes()
+    {
         try {
             Output::data(Privateness::nodesList());
         } catch (EConnectionError $exception) {
@@ -26,17 +30,19 @@ class Node {
         }
     }
 
-    public function services() {
+    public function services()
+    {
         $services = require __DIR__ . '/../../../etc/services.php';
         Output::data($services);
     }
 
-    public function testAuthId(string $username, $id) {
-        $node_config = require '../config/node.php';
-        $node_url = $node_config['url'];
-        $node_nonce = $node_config['nonce'];
-
+    public function testAuthId(string $username, $id)
+    {
         try {
+            $node_config = require '../config/node.php';
+            $node_url = $node_config['url'];
+            $node_nonce = $node_config['nonce'];
+
             $user = Privateness::usersFind($username);
 
             if (false === $user) {
@@ -52,20 +58,20 @@ class Node {
             } else {
                 Output::error('User auth ID FAILED');
             }
-
         } catch (\Throwable $e) {
             Output::error($e->getMessage());
             return false;
         }
     }
 
-    public function testAuthTwoWay() {
-        $node_config = require '../config/node.php';
-        $test_string = "Whoever knows how to take, to defend, the thing, to him belongs property";
-
-        $username = $_POST['username'];
-
+    public function testAuthTwoWay()
+    {
         try {
+            $node_config = require __DIR__ . '/../../../config/node.php';
+            $test_string = "Whoever knows how to take, to defend, the thing, to him belongs property";
+
+            $username = $_POST['username'];
+
             $user = Privateness::usersFind($username);
 
             if (false === $user) {
@@ -87,26 +93,26 @@ class Node {
                 $sig = '';
 
                 Privateness::encrypt2way($data, $sig, $user['public'], $node_config['private'], $node_config['verify']);
-                
+
                 Output::encrypted($data, $sig);
                 return true;
             } else {
                 Output::error("Signature check OK\nDecrypt FAILED");
                 return false;
             }
-
         } catch (\Throwable $e) {
             Output::error($e->getMessage());
             return false;
         }
     }
 
-    public function getAddress(string $username, $id) {
-        $node_config = require '../config/node.php';
-        $node_url = $node_config['url'];
-        $node_nonce = $node_config['nonce'];
-
+    public function getAddress(string $username, $id)
+    {
         try {
+            $node_config = require __DIR__ . '/../../../config/node.php';
+            $node_url = $node_config['url'];
+            $node_nonce = $node_config['nonce'];
+
             $user = Privateness::usersFind($username);
 
             if (false === $user) {
@@ -125,19 +131,19 @@ class Node {
             } else {
                 Output::error('User auth ID FAILED');
             }
-
         } catch (\Throwable | \Error $e) {
             Output::error($e->getMessage());
             return false;
         }
     }
 
-    public function balance(string $username, $id) {
-        $node_config = require '../config/node.php';
-        $node_url = $node_config['url'];
-        $node_nonce = $node_config['nonce'];
-
+    public function balance(string $username, $id)
+    {
         try {
+            $node_config = require __DIR__ . '/../../../config/node.php';
+            $node_url = $node_config['url'];
+            $node_nonce = $node_config['nonce'];
+
             $user = Privateness::usersFind($username);
 
             if (false === $user) {
@@ -152,24 +158,24 @@ class Node {
                 $json = new StorageJson();
                 $pr = new Privateness($json);
                 $balance = $pr->balance($username);
-        
+
                 Output::data(['balance' => $balance]);
             } else {
                 Output::error('User auth ID FAILED');
             }
-
         } catch (\Throwable $e) {
             Output::error($e->getMessage());
             return false;
         }
     }
 
-    public function userinfo(string $username, $id) {
-        $node_config = require '../config/node.php';
-        $node_url = $node_config['url'];
-        $node_nonce = $node_config['nonce'];
-
+    public function userinfo(string $username, $id)
+    {
         try {
+            $node_config = require __DIR__ . '/../../../config/node.php';
+            $node_url = $node_config['url'];
+            $node_nonce = $node_config['nonce'];
+
             $user = Privateness::usersFind($username);
 
             if (false === $user) {
@@ -184,26 +190,26 @@ class Node {
                 $json = new StorageJson();
                 $pr = new Privateness($json);
                 $userinfo = $pr->userinfo($username);
-        
+
                 Output::data(['userinfo' => $userinfo]);
             } else {
                 Output::error('User auth ID FAILED');
             }
-
         } catch (\Throwable $e) {
             Output::error($e->getMessage());
             return false;
         }
     }
 
-    public function withdraw() {
-        $node_config = require '../config/node.php';
-
-        $username = $_POST['username'];
-
-        // Verification
-
+    public function withdraw()
+    {
         try {
+            $node_config = require __DIR__ . '/../../../config/node.php';
+
+            $username = $_POST['username'];
+
+            // Verification
+
             $user = Privateness::usersFind($username);
 
             if (false === $user) {
@@ -225,7 +231,6 @@ class Node {
                 Output::error("Signature check OK\nDecrypt FAILED");
                 return false;
             }
-
         } catch (\Exception $e) {
             Output::error($e->getMessage());
             return false;
@@ -264,7 +269,6 @@ class Node {
             Privateness::encrypt2way($data, $sig, $user['public'], $node_config['private'], $node_config['verify']);
 
             Output::encrypted($data, $sig);
-
         } catch (\Throwable $e) {
             Output::error($e->getMessage());
             return false;
@@ -273,28 +277,22 @@ class Node {
         return true;
     }
 
-    public function testNess() {
-        $json = new StorageJson();
-        $pr = new Privateness($json);
-        var_dump( $pr->getUserAddress('master') );
-        var_dump($pr->balance('master'));
-        var_dump($pr->getUserAddress('ZXC'));
-        var_dump($pr->balance('ZXC'));
-    }
-
-    public function pub() {
-        $node_config = require '../config/node.php';
+    public function pub()
+    {
+        $node_config = require __DIR__ . '/../../../config/node.php';
         ob_clean();
         echo trim($node_config['public']);
     }
 
-    public function verify() {
-        $node_config = require '../config/node.php';
+    public function verify()
+    {
+        $node_config = require __DIR__ . '/../../../config/node.php';
         ob_clean();
         echo trim($node_config['verify']);
     }
 
-    public function man() {
+    public function man()
+    {
         Output::text(file_get_contents(__DIR__ . '/../../../etc/manual.txt'));
     }
 }
