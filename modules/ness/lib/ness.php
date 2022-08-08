@@ -21,7 +21,7 @@ class ness {
     $responce = file_get_contents("http://" . self::$host . ":" . self::$port . "/api/v1/csrf");
 
     if (empty($responce)) {
-      throw new \Exception("Privateness darmon is not running");
+      throw new \Exception("Privateness daemon is not running");
     }
 
     $responce = json_decode($responce, true);
@@ -42,7 +42,7 @@ class ness {
     self::$output = curl_exec($ch);
 
     if (empty(self::$output)) {
-      throw new \Exception("Privateness darmon is not running");
+      throw new \Exception("Privateness daemon is not running");
     }
 
     return json_decode(self::$output, true);
@@ -54,7 +54,7 @@ class ness {
     // var_dump(self::$output);
 
     if (empty(self::$output)) {
-      throw new \Exception("Privateness darmon is not running");
+      throw new \Exception("Privateness daemon is not running");
     }
 
     return json_decode(self::$output, true);
@@ -68,7 +68,7 @@ class ness {
     $responce = file_get_contents("http://" . self::$host . ":" . self::$port . "/api/v1/csrf");
 
     if (empty(self::$output)) {
-      throw new \Exception("Privateness darmon is not running");
+      throw new \Exception("Privateness daemon is not running");
     }
 
     $responce = json_decode($responce, true);

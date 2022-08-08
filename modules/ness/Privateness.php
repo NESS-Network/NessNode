@@ -216,7 +216,7 @@ class Privateness
         $ness = new ness();
         // Check coin ammount
         $balance = $this->balance($from_username);
-        if (($balance['coins'] < ($coins + 0.001)) || ($balance['hours'] < $hours)) {
+        if (($balance['coins'] < ($coins + 0.000001)) || ($balance['hours'] < ($hours+1))) {
             throw new EUserInsuficientFunds($from_username, $balance['coins'], $balance['hours'], $coins, $hours);
         }
 
@@ -373,7 +373,7 @@ class Privateness
 
         if ($counter >= $random_hours) {
             $coin_hours = $this->node_config['tariff'] * $counter;
-            $txid = $ness->send($addr, $master_addr, 0.001, $coin_hours);
+            $txid = $ness->send($addr, $master_addr, 0.000001, $coin_hours);
 
             $this->storage->writeUser($username, '', 0, $this->getRandomCounterHours());
             $this->users = $this->storage->readUsers();
