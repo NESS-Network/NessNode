@@ -314,7 +314,7 @@ class Privateness
 
         $balance = $this->balance($username);
 
-        return (0 < $balance['hours']);
+        return (($this->node_config['tariff'] * $this->users[$username]['counter'] + 1) <= $balance['hours']);
     }
 
     /**
@@ -419,7 +419,9 @@ class Privateness
     public function payUsers()
     {
         foreach ($this->users as $username => $user) {
-            $this->payUser($username);
+            if ($this->isActive($username)) {
+                $this->payUser($username);
+            }
         }
     }
 
