@@ -60,6 +60,18 @@ class ness {
     return json_decode(self::$output, true);
   }
 
+  public function transactions(string $addr): array {
+    // var_dump($addr);
+    self::$output = file_get_contents("http://" . self::$host . ":" . self::$port . "/api/v1/transactions?addrs=" . $addr . "confirmed=1");
+    // var_dump(self::$output);
+
+    if (empty(self::$output)) {
+      throw new \Exception("Privateness daemon is not running");
+    }
+
+    return json_decode(self::$output, true);
+  }
+
   public function getFee(int $hours): int {
     return (int) round($hours * self::$fee);
   }

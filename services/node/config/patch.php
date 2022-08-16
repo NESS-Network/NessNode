@@ -10,7 +10,8 @@ return [
     'test/auth' => ['\services\node\controllers\Node', 'testAuthTwoWay'],
     'test/auth/([^/]+)/([^/]+)' => ['\services\node\controllers\Node', 'testAuthId'],
     '' => ['\services\node\controllers\Node', 'man'],
-    'get-address/([^/]+)/([^/]+)' => ['\services\node\controllers\Node', 'getAddress'],
+    'join/([^/]+)/([^/]+)' => ['\services\node\controllers\Node', 'join'],
+    'joined/([^/]+)/([^/]+)' => ['\services\node\controllers\Node', 'joined'],
     'balance/([^/]+)/([^/]+)' => ['\services\node\controllers\Node', 'balance'],
     'userinfo/([^/]+)/([^/]+)' => ['\services\node\controllers\Node', 'userinfo'],
     'withdraw' => ['\services\node\controllers\Node', 'Withdraw']

@@ -106,7 +106,7 @@ class Node
         }
     }
 
-    public function getAddress(string $username, $id)
+    public function join(string $username, $id)
     {
         try {
             $node_config = require __DIR__ . '/../../../config/node.php';
@@ -128,6 +128,36 @@ class Node
                 $pr = new Privateness($json);
                 $addr = $pr->getUserAddress($username);
                 Output::data(['address' => $addr]);
+            } else {
+                Output::error('User auth ID FAILED');
+            }
+        } catch (\Throwable | \Error $e) {
+            Output::error($e->getMessage());
+            return false;
+        }
+    }
+
+    public function joined(string $username, $id)
+    {
+        try {
+            $node_config = require __DIR__ . '/../../../config/node.php';
+            $node_url = $node_config['url'];
+            $node_nonce = $node_config['nonce'];
+
+            $user = Privateness::usersFind($username);
+
+            if (false === $user) {
+                Output::error('User "' . $username . '" not found');
+                return false;
+            }
+
+            // verify(user_public_key, “node.url-node.nonce-username-user.nonce”, authentication_id)
+            $res = Privateness::verifyID($id, $username, $user['nonce'], $user['verify'], $node_url, $node_nonce);
+
+            if (true === $res) {
+                $json = new StorageJson();
+                $pr = new Privateness($json);
+                Output::data(['address' => $pr->joined($username)]);
             } else {
                 Output::error('User auth ID FAILED');
             }

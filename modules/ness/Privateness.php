@@ -246,9 +246,9 @@ class Privateness
      * User coins and hours
      *
      * @param string $username
-     * @return void
+     * @return array
      */
-    public function balance(string $username)
+    public function balance(string $username): array
     {
         $ness = new ness();
 
@@ -266,12 +266,30 @@ class Privateness
     }
 
     /**
+     * Transactions list
+     *
+     * @param string $username
+     * @return array
+     */
+    public function transactions(string $username): array
+    {
+        $ness = new ness();
+
+        // Check user existance
+        if (!isset($this->users[$username]) || !isset($this->users[$username]['addr'])) {
+            throw new EUserDontExist($username);
+        }
+
+        return $ness->transactions($this->users[$username]['addr']);
+    }
+
+    /**
      * Userinfo
      *
      * @param string $username
-     * @return void
+     * @return array
      */
-    public function userinfo(string $username)
+    public function userinfo(string $username): array
     {
         $ness = new ness();
 
@@ -481,7 +499,7 @@ class Privateness
         $result = [];
 
         $users = $emer->listUsers();
-        var_dump($users);
+        // var_dump($users);
         foreach ($users as $username => $value) {
             if (Worm::isUser($value)) {
                 $result[$username] = Worm::parseUser($value);
@@ -504,5 +522,39 @@ class Privateness
         }
 
         return false;
+    }
+
+    public function slots(): int
+    {
+        return (int) $this->node_config['slots'];
+    }
+
+    public function slotsFree(): int
+    {
+        $slots_used = 0;
+
+        foreach ($this->users as $username => $user) {
+            if ($this->joined($username)) {
+                $slots_used ++;
+            }
+        }
+
+        return $this->slots() - $slots_used;
+    }
+
+    public function joined(string $username): bool
+    {
+        return $this->userExists($username) && !empty($this->transactions($username));
+    }
+
+    public function listLocalUsers(): array
+    {
+        $users = $this->users;
+
+        foreach ($this->users as $username => $user) {
+            $this->users[$username]['joined'] = $this->joined($username);   
+        }
+
+        return $users;
     }
 }
