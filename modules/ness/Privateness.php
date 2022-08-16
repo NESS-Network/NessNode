@@ -301,6 +301,7 @@ class Privateness
         $userinfo = $this->users[$username];
         unset($userinfo['random_hours']);
         $userinfo['balance'] = $this->balance($username);
+        $userinfo['joined'] = $this->joined($username);
         $userinfo['is_active'] = $this->isActive($username);
 
         return $userinfo;
@@ -553,6 +554,7 @@ class Privateness
 
         foreach ($this->users as $username => $user) {
             $this->users[$username]['joined'] = $this->joined($username);   
+            $this->users[$username]['is_active'] = $this->isActive($username);   
         }
 
         return $users;

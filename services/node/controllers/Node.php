@@ -157,7 +157,7 @@ class Node
             if (true === $res) {
                 $json = new StorageJson();
                 $pr = new Privateness($json);
-                Output::data(['address' => $pr->joined($username)]);
+                Output::data(['joined' => $pr->joined($username)]);
             } else {
                 Output::error('User auth ID FAILED');
             }
