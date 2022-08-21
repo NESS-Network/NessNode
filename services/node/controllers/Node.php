@@ -9,6 +9,7 @@ use Base32\Base32;
 use modules\ness\lib\ness;
 use modules\ness\Privateness;
 use modules\ness\lib\StorageJson;
+use modules\ness\Creator;
 
 class Node
 {
@@ -39,11 +40,14 @@ class Node
     public function testAuthId(string $username, $id)
     {
         try {
-            $node_config = require '../config/node.php';
-            $node_url = $node_config['url'];
-            $node_nonce = $node_config['nonce'];
+            // $node_config = require '../config/node.php';
+            // $node_url = $node_config['url'];
+            // $node_nonce = $node_config['nonce'];
 
-            $user = Privateness::usersFind($username);
+            // $user = Privateness::usersFind($username);
+            $pr = Creator::Privateness();
+
+            $user = $pr->findUser($username);
 
             if (false === $user) {
                 Output::error('User "' . $username . '" not found');
@@ -51,7 +55,7 @@ class Node
             }
 
             // verify(user_public_key, “node.url-node.nonce-username-user.nonce”, authentication_id)
-            $res = Privateness::verifyID($id, $username, $user['nonce'], $user['verify'], $node_url, $node_nonce);
+            $res = $pr->verifyUserId($id, $user);
 
             if (true === $res) {
                 Output::message('User auth ID OK');
@@ -67,32 +71,37 @@ class Node
     public function testAuthTwoWay()
     {
         try {
-            $node_config = require __DIR__ . '/../../../config/node.php';
+            // $node_config = require __DIR__ . '/../../../config/node.php';
             $test_string = "Whoever knows how to take, to defend, the thing, to him belongs property";
 
             $username = $_POST['username'];
 
-            $user = Privateness::usersFind($username);
+            // $user = Privateness::usersFind($username);
+            $pr = Creator::Privateness();
+
+            $user = $pr->findUser($username);
 
             if (false === $user) {
                 Output::error('User "' . $username . '" not found');
                 return false;
             }
 
-            $res = Privateness::verify2way($_POST['data'], $_POST['sig'], $user['verify']);
+            $res = $pr->verifyUser2way($_POST['data'], $_POST['sig'], $user);
 
             if (false === $res) {
                 Output::error('Signature check FAILED');
                 return false;
             }
 
-            $decrypted = Privateness::decrypt2way($_POST['data'], $node_config['private'], $node_config['public']);
+            // $decrypted = Privateness::decrypt2way($_POST['data'], $node_config['private'], $node_config['public']);
+            $decrypted = $pr->decryptUser2way($_POST['data']);
 
             if ('The state calls its own violence law, but that of the individual, crime.' === $decrypted) {
                 $data = $test_string;
                 $sig = '';
 
-                Privateness::encrypt2way($data, $sig, $user['public'], $node_config['private'], $node_config['verify']);
+                // Privateness::encrypt2way($data, $sig, $user['public'], $node_config['private'], $node_config['verify']);
+                $pr->encryptUser2way($data, $sig, $user);
 
                 Output::encrypted($data, $sig);
                 return true;

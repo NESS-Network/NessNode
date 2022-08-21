@@ -8,6 +8,7 @@ use modules\ness\interfaces\Storage;
 
 use modules\emer\Emer;
 use modules\worm\Worm;
+use modules\ness\User;
 
 use modules\ness\exceptions\EUserDontExist;
 use modules\ness\exceptions\EMasterUserDontExist;
@@ -31,6 +32,17 @@ class Privateness
     private Storage $storage;
 
     public static $output = [];
+
+    private string $host;
+    private string $nonce;
+
+    private string $private;
+    private string $public;
+    private string $verify;
+
+    private int $tariff;
+    private int $period;
+    private int $delta;
 
     /**
      * Config initialisation
@@ -64,6 +76,13 @@ class Privateness
 
         $this->users = $this->storage->readUsers();
         $this->payments = $this->storage->readPayments();
+
+        $this->host = $this->node_config['url'];
+        $this->nonce = $this->node_config['nonce'];
+
+        $this->private = $this->node_config['private'];
+        $this->public = $this->node_config['public'];
+        $this->verify = $this->node_config['verify'];
 
         ness::$host = $this->config['host'];
         ness::$port = $this->config['port'];
@@ -156,6 +175,12 @@ class Privateness
         return sodium_crypto_sign_verify_detached(Base32::decode($authID), $message, base64_decode($user_verify));
     }
 
+    public function verifyUserId(string $authID, User $user)
+    {
+        $message = $this->host . '-' . $this->nonce . '-' . $user->getUsername() . '-' . $user->getNonce();
+        return sodium_crypto_sign_verify_detached(Base32::decode($authID), $message, base64_decode($user->getVerify()));
+    }
+
     /**
      * Two-Way-Authentication: verifying Auth-ID
      *
@@ -169,6 +194,11 @@ class Privateness
         sodium_crypto_sign_verify_detached(Base32::decode($sig), $data, base64_decode($user_verify));
     }
 
+    public function verifyUser2way(string $data, string $sig, User $user)
+    {
+        sodium_crypto_sign_verify_detached(Base32::decode($sig), $data, base64_decode($user->getVerify()));
+    }
+
     /**
      * Two-Way-Authentication: decrypting data from user to node
      *
@@ -180,6 +210,12 @@ class Privateness
     public static function decrypt2way(string $data, string $node_private, string $node_pub)
     {
         $keypair = sodium_crypto_box_keypair_from_secretkey_and_publickey(base64_decode($node_private), base64_decode($node_pub));
+        return sodium_crypto_box_seal_open(base64_decode($data), $keypair);
+    }
+
+    public function decryptUser2way(string $data)
+    {
+        $keypair = sodium_crypto_box_keypair_from_secretkey_and_publickey(base64_decode($this->private), base64_decode($this->public));
         return sodium_crypto_box_seal_open(base64_decode($data), $keypair);
     }
 
@@ -198,6 +234,15 @@ class Privateness
         $data = sodium_crypto_box_seal($data, base64_decode($user_pub));
         $data = base64_encode($data);
         $keypair = sodium_crypto_box_keypair_from_secretkey_and_publickey(base64_decode($node_priv), base64_decode($node_verify));
+        $sig = sodium_crypto_sign_detached($data, $keypair);
+        $sig = Base32::encode($sig);
+    }
+
+    public function encryptUser2way(string &$data, string &$sig, User $user)
+    {
+        $data = sodium_crypto_box_seal($data, base64_decode($user->getPublic()));
+        $data = base64_encode($data);
+        $keypair = sodium_crypto_box_keypair_from_secretkey_and_publickey(base64_decode($this->private), base64_decode($this->verify));
         $sig = sodium_crypto_sign_detached($data, $keypair);
         $sig = Base32::encode($sig);
     }
@@ -520,6 +565,34 @@ class Privateness
         $user = $emer->findUser($username);
         if (Worm::isUser($user['value'])) {
             return Worm::parseUser($user['value']);
+        }
+
+        return false;
+    }
+
+    /**
+     * Find user everywhere by username or userhash
+     */
+    public function findUser(string $username_or_userhash): User|bool
+    {
+        $emer = new Emer();
+
+        $user = $emer->findUser($username_or_userhash);
+        if (Worm::isUser($user['value'])) {
+            $user = Worm::parseUser($user['value']);
+            return new User($username_or_userhash, $user['type'], $user['nonce'], $user['tags'], $user['public'], $user['verify']);
+        }
+
+        $users = $this->listLocalUsers();
+
+        foreach ($users as $username => $user) {
+            if ($username_or_userhash === md5($username . '-' . $this->host . '-' . $this->nonce)) {
+                $user = $emer->findUser($username);
+                if (Worm::isUser($user['value'])) {
+                    $user = Worm::parseUser($user['value']);
+                    return new User($username, $user['type'], $user['nonce'], $user['tags'], $user['public'], $user['verify']);
+                }
+            }
         }
 
         return false;
