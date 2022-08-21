@@ -62,7 +62,7 @@ class ness {
 
   public function transactions(string $addr): array {
     // var_dump($addr);
-    self::$output = file_get_contents("http://" . self::$host . ":" . self::$port . "/api/v1/transactions?addrs=" . $addr . "confirmed=1");
+    self::$output = file_get_contents("http://" . self::$host . ":" . self::$port . "/api/v1/transactions?addrs=" . $addr . "&confirmed=1");
     // var_dump(self::$output);
 
     if (empty(self::$output)) {

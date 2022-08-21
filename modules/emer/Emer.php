@@ -39,7 +39,7 @@ class Emer
         }
     }
 
-    public function findUser(string $username): array
+    public function findUser(string $username): array|false
     {
         try {
             /** @var array $user  */
@@ -51,10 +51,10 @@ class Emer
             $message = $exception->getMessage();
             if (strpos($message, 'Can\'t connect to') !== false) {
                 throw new EConnectionError($this->config, $message);
-            } elseif (strpos($message, 'failed to read from name DB') !== false) {
-                throw new EUserNotFound($username);
-            } else {
-                throw new \Exception($message);
+            // } elseif (strpos($message, 'failed to read from name DB') !== false) {
+                // throw new EUserNotFound($username);
+            // } else {
+            //     throw new \Exception($message);
             }
 
             return false;

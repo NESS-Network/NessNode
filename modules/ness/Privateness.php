@@ -578,13 +578,14 @@ class Privateness
         $emer = new Emer();
 
         $user = $emer->findUser($username_or_userhash);
-        if (Worm::isUser($user['value'])) {
+
+        if (false !== $user && Worm::isUser($user['value'])) {
             $user = Worm::parseUser($user['value']);
             return new User($username_or_userhash, $user['type'], $user['nonce'], $user['tags'], $user['public'], $user['verify']);
         }
 
         $users = $this->listLocalUsers();
-
+        
         foreach ($users as $username => $user) {
             if ($username_or_userhash === md5($username . '-' . $this->host . '-' . $this->nonce)) {
                 $user = $emer->findUser($username);
@@ -625,9 +626,9 @@ class Privateness
     {
         $users = $this->users;
 
-        foreach ($this->users as $username => $user) {
-            $this->users[$username]['joined'] = $this->joined($username);   
-            $this->users[$username]['is_active'] = $this->isActive($username);   
+        foreach ($users as $username => $user) {
+            $users[$username]['joined'] = $this->joined($username);   
+            $users[$username]['is_active'] = $this->isActive($username);   
         }
 
         return $users;

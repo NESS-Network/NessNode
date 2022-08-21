@@ -39,7 +39,7 @@ class Node
 
     public function testAuthId(string $username, $id)
     {
-        try {
+        // try {
             // $node_config = require '../config/node.php';
             // $node_url = $node_config['url'];
             // $node_nonce = $node_config['nonce'];
@@ -56,16 +56,16 @@ class Node
 
             // verify(user_public_key, “node.url-node.nonce-username-user.nonce”, authentication_id)
             $res = $pr->verifyUserId($id, $user);
-
+            
             if (true === $res) {
                 Output::message('User auth ID OK');
             } else {
                 Output::error('User auth ID FAILED');
             }
-        } catch (\Throwable $e) {
-            Output::error($e->getMessage());
-            return false;
-        }
+        // } catch (\Throwable $e) {
+        //     Output::error($e->getMessage());
+        //     return false;
+        // }
     }
 
     public function testAuthTwoWay()
