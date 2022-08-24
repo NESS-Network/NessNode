@@ -39,14 +39,8 @@ class Node
 
     public function testAuthId(string $username, $id)
     {
-        // try {
-            // $node_config = require '../config/node.php';
-            // $node_url = $node_config['url'];
-            // $node_nonce = $node_config['nonce'];
-
-            // $user = Privateness::usersFind($username);
+        try {
             $pr = Creator::Privateness();
-
             $user = $pr->findUser($username);
 
             if (false === $user) {
@@ -62,23 +56,20 @@ class Node
             } else {
                 Output::error('User auth ID FAILED');
             }
-        // } catch (\Throwable $e) {
-        //     Output::error($e->getMessage());
-        //     return false;
-        // }
+        } catch (\Throwable $e) {
+            Output::error($e->getMessage());
+            return false;
+        }
     }
 
     public function testAuthTwoWay()
     {
         try {
-            // $node_config = require __DIR__ . '/../../../config/node.php';
             $test_string = "Whoever knows how to take, to defend, the thing, to him belongs property";
 
             $username = $_POST['username'];
 
-            // $user = Privateness::usersFind($username);
             $pr = Creator::Privateness();
-
             $user = $pr->findUser($username);
 
             if (false === $user) {
@@ -93,14 +84,12 @@ class Node
                 return false;
             }
 
-            // $decrypted = Privateness::decrypt2way($_POST['data'], $node_config['private'], $node_config['public']);
             $decrypted = $pr->decryptUser2way($_POST['data']);
 
             if ('The state calls its own violence law, but that of the individual, crime.' === $decrypted) {
                 $data = $test_string;
                 $sig = '';
 
-                // Privateness::encrypt2way($data, $sig, $user['public'], $node_config['private'], $node_config['verify']);
                 $pr->encryptUser2way($data, $sig, $user);
 
                 Output::encrypted($data, $sig);
@@ -118,11 +107,8 @@ class Node
     public function join(string $username, $id)
     {
         try {
-            $node_config = require __DIR__ . '/../../../config/node.php';
-            $node_url = $node_config['url'];
-            $node_nonce = $node_config['nonce'];
-
-            $user = Privateness::usersFind($username);
+            $pr = Creator::Privateness();
+            $user = $pr->findUser($username);
 
             if (false === $user) {
                 Output::error('User "' . $username . '" not found');
@@ -130,12 +116,10 @@ class Node
             }
 
             // verify(user_public_key, “node.url-node.nonce-username-user.nonce”, authentication_id)
-            $res = Privateness::verifyID($id, $username, $user['nonce'], $user['verify'], $node_url, $node_nonce);
+            $res = $pr->verifyUserId($id, $user);
 
             if (true === $res) {
-                $json = new StorageJson();
-                $pr = new Privateness($json);
-                $addr = $pr->getUserAddress($username);
+                $addr = $pr->getUserAddress($user->getUsername());
                 Output::data(['address' => $addr]);
             } else {
                 Output::error('User auth ID FAILED');
@@ -149,11 +133,8 @@ class Node
     public function joined(string $username, $id)
     {
         try {
-            $node_config = require __DIR__ . '/../../../config/node.php';
-            $node_url = $node_config['url'];
-            $node_nonce = $node_config['nonce'];
-
-            $user = Privateness::usersFind($username);
+            $pr = Creator::Privateness();
+            $user = $pr->findUser($username);
 
             if (false === $user) {
                 Output::error('User "' . $username . '" not found');
@@ -161,12 +142,10 @@ class Node
             }
 
             // verify(user_public_key, “node.url-node.nonce-username-user.nonce”, authentication_id)
-            $res = Privateness::verifyID($id, $username, $user['nonce'], $user['verify'], $node_url, $node_nonce);
+            $res = $pr->verifyUserId($id, $user);
 
             if (true === $res) {
-                $json = new StorageJson();
-                $pr = new Privateness($json);
-                Output::data(['joined' => $pr->joined($username)]);
+                Output::data(['joined' => $pr->joined($user->getUsername())]);
             } else {
                 Output::error('User auth ID FAILED');
             }
@@ -179,11 +158,8 @@ class Node
     public function balance(string $username, $id)
     {
         try {
-            $node_config = require __DIR__ . '/../../../config/node.php';
-            $node_url = $node_config['url'];
-            $node_nonce = $node_config['nonce'];
-
-            $user = Privateness::usersFind($username);
+            $pr = Creator::Privateness();
+            $user = $pr->findUser($username);
 
             if (false === $user) {
                 Output::error('User "' . $username . '" not found');
@@ -191,12 +167,10 @@ class Node
             }
 
             // verify(user_public_key, “node.url-node.nonce-username-user.nonce”, authentication_id)
-            $res = Privateness::verifyID($id, $username, $user['nonce'], $user['verify'], $node_url, $node_nonce);
+            $res = $pr->verifyUserId($id, $user);
 
             if (true === $res) {
-                $json = new StorageJson();
-                $pr = new Privateness($json);
-                $balance = $pr->balance($username);
+                $balance = $pr->balance($user->getUsername());
 
                 Output::data(['balance' => $balance]);
             } else {
@@ -211,11 +185,8 @@ class Node
     public function userinfo(string $username, $id)
     {
         try {
-            $node_config = require __DIR__ . '/../../../config/node.php';
-            $node_url = $node_config['url'];
-            $node_nonce = $node_config['nonce'];
-
-            $user = Privateness::usersFind($username);
+            $pr = Creator::Privateness();
+            $user = $pr->findUser($username);
 
             if (false === $user) {
                 Output::error('User "' . $username . '" not found');
@@ -223,12 +194,10 @@ class Node
             }
 
             // verify(user_public_key, “node.url-node.nonce-username-user.nonce”, authentication_id)
-            $res = Privateness::verifyID($id, $username, $user['nonce'], $user['verify'], $node_url, $node_nonce);
+            $res = $pr->verifyUserId($id, $user);
 
             if (true === $res) {
-                $json = new StorageJson();
-                $pr = new Privateness($json);
-                $userinfo = $pr->userinfo($username);
+                $userinfo = $pr->userinfo($user->getUsername());
 
                 Output::data(['userinfo' => $userinfo]);
             } else {
@@ -243,27 +212,26 @@ class Node
     public function withdraw()
     {
         try {
-            $node_config = require __DIR__ . '/../../../config/node.php';
-
             $username = $_POST['username'];
 
-            // Verification
+            $pr = Creator::Privateness();
+            $user = $pr->findUser($username);
 
-            $user = Privateness::usersFind($username);
+            // Verification
 
             if (false === $user) {
                 Output::error('User "' . $username . '" not found');
                 return false;
             }
 
-            $res = Privateness::verify2way($_POST['data'], $_POST['sig'], $user['verify']);
+            $res = $pr->verifyUser2way($_POST['data'], $_POST['sig'], $user);
 
             if (false === $res) {
                 Output::error('Signature check FAILED');
                 return false;
             }
 
-            $decrypted = Privateness::decrypt2way($_POST['data'], $node_config['private'], $node_config['public']);
+            $decrypted = $pr->decryptUser2way($_POST['data']);
             $wdata = json_decode($decrypted, true);
 
             if (!is_array($wdata)) {
@@ -282,11 +250,7 @@ class Node
         $to_addr = (string) $wdata['to_addr'];
 
         try {
-
-            $json = new StorageJson();
-            $pr = new Privateness($json);
-
-            $balance = $pr->balance($username);
+            $balance = $pr->balance($user->getUsername());
 
             if ($coins > $balance['coins']) {
                 throw new \Exception("You want to withdraw $coins coins this is more than available ("
@@ -305,7 +269,7 @@ class Node
             $data = "The user $username withdrawed $coins coins and $hours hours to $to_addr";
             $sig = '';
 
-            Privateness::encrypt2way($data, $sig, $user['public'], $node_config['private'], $node_config['verify']);
+            $pr->encryptUser2way($data, $sig, $user);
 
             Output::encrypted($data, $sig);
         } catch (\Throwable $e) {
