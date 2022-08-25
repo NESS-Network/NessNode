@@ -371,13 +371,14 @@ class Privateness
      */
     public function isActive(string $username): bool
     {
+        // return true;
         //Check user existance
         if (!isset($this->users[$username]) || !isset($this->users[$username]['addr'])) {
-            throw new EUserDontExist($username);
+            return false;
         }
 
         $balance = $this->balance($username);
-
+        
         return (($this->node_config['tariff'] * $this->users[$username]['counter'] + 1) <= $balance['hours']);
     }
 

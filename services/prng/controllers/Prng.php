@@ -6,6 +6,7 @@ use Exception;
 use modules\worm\Worm;
 use modules\ness\Privateness;
 use \modules\ness\lib\StorageJson;
+use modules\ness\Creator;
 
 use internals\lib\Output;
 use services\prng\exceptions\EFileNotFound;
@@ -21,37 +22,31 @@ use services\prng\models\Prng as PrngModel;
 
 class Prng
 {
-    private string $node_url;
-    private string $node_nonce;
     private PrngModel $prng;
     private Privateness $privateness;
 
     public function __construct()
     {
-        $node_config = require '../config/node.php';
-        $this->node_url = $node_config['url'];
-        $this->node_nonce = $node_config['nonce'];
         $this->prng = new PrngModel();
-        $json = new StorageJson();
-        $this->privateness = new Privateness($json);
+        $this->privateness = Creator::Privateness();
     }
 
     public function seed(string $username, $id)
     {
         try {
-            $user = Privateness::usersFind($username);
-
+            $user = $this->privateness->findUser($username);
+            
             if (false === $user) {
                 Output::error('User "' . $username . '" not found');
                 return false;
             }
 
-            if (!$this->privateness->isActive($username)) {
+            if (!$this->privateness->isActive($user->getUsername())) {
                 Output::error('User "' . $username . '" is inactive');
                 return false;
             }
 
-            $res = Privateness::verifyID($id, $username, $user['nonce'], $user['verify'], $this->node_url, $this->node_nonce);
+            $res = $this->privateness->verifyUserId($id, $user);
 
             if (true === $res) {
                 Output::data(['seed' => $this->prng->seed()]);
@@ -66,19 +61,19 @@ class Prng
     public function seedb(string $username, $id)
     {
         try {
-            $user = Privateness::usersFind($username);
+            $user = $this->privateness->findUser($username);
 
             if (false === $user) {
                 Output::error('User "' . $username . '" not found');
                 return false;
             }
 
-            if (!$this->privateness->isActive($username)) {
+            if (!$this->privateness->isActive($user->getUsername())) {
                 Output::error('User "' . $username . '" is inactive');
                 return false;
             }
 
-            $res = Privateness::verifyID($id, $username, $user['nonce'], $user['verify'], $this->node_url, $this->node_nonce);
+            $res = $this->privateness->verifyUserId($id, $user);
 
             if (true === $res) {
                 Output::data(['seedb' => $this->prng->seedb()]);
@@ -93,19 +88,19 @@ class Prng
     public function numbers(string $username, $id)
     {
         try {
-            $user = Privateness::usersFind($username);
+            $user = $this->privateness->findUser($username);
 
             if (false === $user) {
                 Output::error('User "' . $username . '" not found');
                 return false;
             }
 
-            if (!$this->privateness->isActive($username)) {
+            if (!$this->privateness->isActive($user->getUsername())) {
                 Output::error('User "' . $username . '" is inactive');
                 return false;
             }
 
-            $res = Privateness::verifyID($id, $username, $user['nonce'], $user['verify'], $this->node_url, $this->node_nonce);
+            $res = $this->privateness->verifyUserId($id, $user);
 
             if (true === $res) {
                 Output::data(['numbers' => $this->prng->numbers()]);
@@ -120,22 +115,76 @@ class Prng
     public function numbersb(string $username, $id)
     {
         try {
-            $user = Privateness::usersFind($username);
+            $user = $this->privateness->findUser($username);
 
             if (false === $user) {
                 Output::error('User "' . $username . '" not found');
                 return false;
             }
 
-            if (!$this->privateness->isActive($username)) {
+            if (!$this->privateness->isActive($user->getUsername())) {
                 Output::error('User "' . $username . '" is inactive');
                 return false;
             }
 
-            $res = Privateness::verifyID($id, $username, $user['nonce'], $user['verify'], $this->node_url, $this->node_nonce);
+            $res = $this->privateness->verifyUserId($id, $user);
 
             if (true === $res) {
                 Output::data(['numbersb' => $this->prng->numbersb()]);
+            } else {
+                Output::error('User auth ID FAILED');
+            }
+        } catch (\Throwable $exception) {
+            Output::error($exception->getMessage());
+        }
+    }
+    
+    public function i256(string $username, $id)
+    {
+        try {
+            $user = $this->privateness->findUser($username);
+
+            if (false === $user) {
+                Output::error('User "' . $username . '" not found');
+                return false;
+            }
+
+            if (!$this->privateness->isActive($user->getUsername())) {
+                Output::error('User "' . $username . '" is inactive');
+                return false;
+            }
+
+            $res = $this->privateness->verifyUserId($id, $user);
+
+            if (true === $res) {
+                Output::data(['numbers' => $this->prng->numbers256i()]);
+            } else {
+                Output::error('User auth ID FAILED');
+            }
+        } catch (\Throwable $exception) {
+            Output::error($exception->getMessage());
+        }
+    }
+    
+    public function h256(string $username, $id)
+    {
+        try {
+            $user = $this->privateness->findUser($username);
+
+            if (false === $user) {
+                Output::error('User "' . $username . '" not found');
+                return false;
+            }
+
+            if (!$this->privateness->isActive($user->getUsername())) {
+                Output::error('User "' . $username . '" is inactive');
+                return false;
+            }
+
+            $res = $this->privateness->verifyUserId($id, $user);
+
+            if (true === $res) {
+                Output::data(['numbers' => $this->prng->numbers256h()]);
             } else {
                 Output::error('User auth ID FAILED');
             }
