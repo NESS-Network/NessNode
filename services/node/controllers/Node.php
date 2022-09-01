@@ -10,6 +10,7 @@ use modules\ness\lib\ness;
 use modules\ness\Privateness;
 use modules\ness\lib\StorageJson;
 use modules\ness\Creator;
+use services\files\exceptions\EConfigError;
 
 class Node
 {
@@ -292,6 +293,35 @@ class Node
         $node_config = require __DIR__ . '/../../../config/node.php';
         ob_clean();
         echo trim($node_config['verify']);
+    }
+
+    public function slots()
+    {
+        $node_config = require __DIR__ . '/../../../config/node.php';
+
+        try {
+            if (!isset($node_config['slots'])) {
+                throw new EConfigError('config/node.php', 'slots');
+            }
+
+            $pr = Creator::Privateness();
+            $users_count = count($pr->listLocalUsers());
+
+            ob_clean();
+
+            echo json_encode([
+                'slots' => [
+                    'total' => (int)$node_config['slots'],
+                    'used' => $users_count,
+                    'free' => (int)$node_config['slots'] - $users_count,
+                ]
+            ]);
+        } catch (\Throwable $e) {
+            Output::error($e->getMessage());
+            return false;
+        }
+
+        return true;
     }
 
     public function man()

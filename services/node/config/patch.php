@@ -7,6 +7,7 @@ return [
     'man' => ['\services\node\controllers\Node', 'man'],
     'pub' => ['\services\node\controllers\Node', 'pub'],
     'verify' => ['\services\node\controllers\Node', 'verify'],
+    'slots' => ['\services\node\controllers\Node', 'slots'],
     'test/auth' => ['\services\node\controllers\Node', 'testAuthTwoWay'],
     'test/auth/([^/]+)/([^/]+)' => ['\services\node\controllers\Node', 'testAuthId'],
     '' => ['\services\node\controllers\Node', 'man'],

@@ -1,0 +1,15 @@
+{
+    "name": "privateness/files",
+    "description": "privateness files service",
+    "authors": [
+        {
+            "name": "Aleksej Sokolov",
+            "email": "aleksej000@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "guzzlehttp/guzzle": "^7.0",
+        "christian-riesen/base32": "1.x-dev"
+    }
+}

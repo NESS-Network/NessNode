@@ -1,0 +1,6 @@
+.git
+vendor
+vendor/*
+storage
+storage/*
+composer.lock
