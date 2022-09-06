@@ -45,7 +45,13 @@ class ness {
       throw new \Exception("Privateness daemon is not running");
     }
 
-    return json_decode(self::$output, true);
+    $result = json_decode(self::$output, true);
+
+    if (null === $result) {
+      throw new \Exception("Error creating address: " . self::$output);
+    }
+
+    return $result;
   }
 
   public function getBalance(string $addr): array {
