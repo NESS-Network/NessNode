@@ -671,6 +671,11 @@ class Privateness
 
     public function joined(string $username): bool
     {
+        return $this->userExists($username);
+    }
+
+    public function in(string $username): bool
+    {
         return $this->userExists($username) && !empty($this->transactions($username));
     }
 
