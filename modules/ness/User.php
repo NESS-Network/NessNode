@@ -10,15 +10,18 @@ namespace modules\ness;
 class User
 {
     private string $username;
+    private string $address;
     private string $type;
     private string $nonce;
     private array $tags;
     private string $public;
     private string $verify;
 
-    public function __construct(string $username, string $type, string $nonce, array $tags, string $public, string $verify)
+    public function __construct(string $username, string $address, string $shadowname, string $type, string $nonce, array $tags, string $public, string $verify)
     {
         $this->username = $username;
+        $this->address = $address;
+        $this->shadowname = $shadowname;
         $this->type = $type;
         $this->nonce = $nonce;
         $this->tags = $tags;
@@ -29,6 +32,16 @@ class User
     public function getUsername(): string
     {
         return $this->username;
+    }
+
+    public function getAddress(): string
+    {
+        return $this->address;
+    }
+
+    public function getShadowname(): string
+    {
+        return $this->shadowname;
     }
 
     public function getType(): string

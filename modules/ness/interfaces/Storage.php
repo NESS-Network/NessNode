@@ -11,7 +11,8 @@ use DateTime;
 interface Storage {
     public function readUsers(): array;
     public function readUser(string $username): array;
-    public function writeUser(string $username, string $address = '', int $counter = 0, int $random_hours = 0);
+    public function findUser(string $shadowname): array;
+    public function writeUser(string $username, string $address = '', int $counter = 0, int $random_hours = 0, string $shadowname = '');
     public function readPayments(): array;
     public function writePayment(string $username, string $date, int $hours, int $coin_hours_payed, string $txid);
 }

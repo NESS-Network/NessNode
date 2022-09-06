@@ -6,7 +6,7 @@ use modules\crypto\Crypto;
 use internals\lib\Output;
 use Base32\Base32;
 
-use services\files\models\Files;
+use services\files\lib\Files;
 
 use modules\ness\lib\ness;
 use modules\ness\Privateness;

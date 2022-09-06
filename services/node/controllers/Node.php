@@ -63,6 +63,31 @@ class Node
         }
     }
 
+    public function testAuthShadowId(string $shadowname, $id)
+    {
+        try {
+            $pr = Creator::Privateness();
+            $user = $pr->findShadow($shadowname);
+
+            if (false === $user) {
+                Output::error('User "' . $shadowname . '" not found');
+                return false;
+            }
+
+            // verify(user_public_key, “node.url-node.nonce-username-user.nonce”, authentication_id)
+            $res = $pr->verifyUserId($id, $user);
+            
+            if (true === $res) {
+                Output::message('User auth ID OK');
+            } else {
+                Output::error('User auth ID FAILED');
+            }
+        } catch (\Throwable $e) {
+            Output::error($e->getMessage());
+            return false;
+        }
+    }
+
     public function testAuthTwoWay()
     {
         try {
@@ -105,77 +130,41 @@ class Node
         }
     }
 
-    public function join(string $username, $id)
+    public function testAuthShadowTwoWay()
     {
         try {
+            $test_string = "The state calls its own violence law, but that of the individual, crime.";
+
+            $shadowname = $_POST['username'];
+
             $pr = Creator::Privateness();
-            $user = $pr->findUser($username);
+            $user = $pr->findShadow($shadowname);
 
             if (false === $user) {
-                Output::error('User "' . $username . '" not found');
+                Output::error('User "' . $shadowname . '" not found');
                 return false;
             }
 
-            // verify(user_public_key, “node.url-node.nonce-username-user.nonce”, authentication_id)
-            $res = $pr->verifyUserId($id, $user);
+            $res = $pr->verifyUser2way($_POST['data'], $_POST['sig'], $user);
 
-            if (true === $res) {
-                $addr = $pr->getUserAddress($user->getUsername());
-                Output::data(['address' => $addr]);
-            } else {
-                Output::error('User auth ID FAILED');
-            }
-        } catch (\Throwable | \Error $e) {
-            Output::error($e->getMessage());
-            return false;
-        }
-    }
-
-    public function joined(string $username, $id)
-    {
-        try {
-            $pr = Creator::Privateness();
-            $user = $pr->findUser($username);
-
-            if (false === $user) {
-                Output::error('User "' . $username . '" not found');
+            if (false === $res) {
+                Output::error('Signature check FAILED');
                 return false;
             }
 
-            // verify(user_public_key, “node.url-node.nonce-username-user.nonce”, authentication_id)
-            $res = $pr->verifyUserId($id, $user);
+            $decrypted = $pr->decryptUser2way($_POST['data']);
 
-            if (true === $res) {
-                Output::data(['joined' => $pr->joined($user->getUsername())]);
+            if ('Whoever knows how to take, to defend, the thing, to him belongs property' === $decrypted) {
+                $data = $test_string;
+                $sig = '';
+
+                $pr->encryptUser2way($data, $sig, $user);
+
+                Output::encrypted($data, $sig);
+                return true;
             } else {
-                Output::error('User auth ID FAILED');
-            }
-        } catch (\Throwable | \Error $e) {
-            Output::error($e->getMessage());
-            return false;
-        }
-    }
-
-    public function balance(string $username, $id)
-    {
-        try {
-            $pr = Creator::Privateness();
-            $user = $pr->findUser($username);
-
-            if (false === $user) {
-                Output::error('User "' . $username . '" not found');
+                Output::error("Signature check OK\nDecrypt FAILED");
                 return false;
-            }
-
-            // verify(user_public_key, “node.url-node.nonce-username-user.nonce”, authentication_id)
-            $res = $pr->verifyUserId($id, $user);
-
-            if (true === $res) {
-                $balance = $pr->balance($user->getUsername());
-
-                Output::data(['balance' => $balance]);
-            } else {
-                Output::error('User auth ID FAILED');
             }
         } catch (\Throwable $e) {
             Output::error($e->getMessage());
@@ -183,9 +172,11 @@ class Node
         }
     }
 
-    public function userinfo(string $username, $id)
+    public function join()
     {
         try {
+            $username = $_POST['username'];
+
             $pr = Creator::Privateness();
             $user = $pr->findUser($username);
 
@@ -194,15 +185,128 @@ class Node
                 return false;
             }
 
-            // verify(user_public_key, “node.url-node.nonce-username-user.nonce”, authentication_id)
-            $res = $pr->verifyUserId($id, $user);
+            $res = $pr->verifyUser2way($_POST['data'], $_POST['sig'], $user);
+
+            if (true === $res) {
+                if (!$pr->register($user)) {
+                    Output::error('User olready joined');
+                }
+
+                $user = $pr->findUser($username);
+                // Output::data(['address' => $addr, 'shadowname' => $user->getShadowname()]);
+                $data = json_encode(['address' => $user->getAddress(), 'shadowname' => $user->getShadowname()]);
+                $sig = '';
+
+                $pr->encryptUser2way($data, $sig, $user);
+
+                Output::encrypted($data, $sig);
+            } else {
+                Output::error('User verification FAILED');
+            }
+        } catch (\Throwable | \Error $e) {
+            Output::error($e->getMessage());
+            return false;
+        }
+    }
+
+    public function joined()
+    {
+        try {
+            $username = $_POST['username'];
+
+            $pr = Creator::Privateness();
+            $user = $pr->findUser($username);
+
+            if (false === $user) {
+                Output::error('User "' . $username . '" not found');
+                return false;
+            }
+
+            $res = $pr->verifyUser2way($_POST['data'], $_POST['sig'], $user);
+
+            if (true === $res) {
+                $joined = $pr->joined($user->getUsername());
+
+                if ($joined) {
+                    $data = json_encode([
+                            'joined' => true,
+                            'address' => $user->getAddress(), 
+                            'shadowname' => $user->getShadowname()
+                    ]);
+                } else {
+                    $data = json_encode(['joined' => false]);
+                }
+
+                $sig = '';
+
+                $pr->encryptUser2way($data, $sig, $user);
+                Output::encrypted($data, $sig);
+            } else {
+                Output::error('Signature check FAILED');
+            }
+        } catch (\Throwable | \Error $e) {
+            Output::error($e->getMessage());
+            return false;
+        }
+    }
+
+    public function balance()
+    {
+        try {
+            $shadowname = $_POST['shadowname'];
+
+            $pr = Creator::Privateness();
+            $user = $pr->findShadow($shadowname);
+
+            if (false === $user) {
+                Output::error('User "' . $shadowname . '" not found');
+                return false;
+            }
+
+            $res = $pr->verifyUser2way($_POST['data'], $_POST['sig'], $user);
+
+            if (true === $res) {
+                $balance = $pr->balance($user->getUsername());
+
+                $data = json_encode(['balance' => $balance]);
+                $sig = '';
+    
+                $pr->encryptUser2way($data, $sig, $user);
+                Output::encrypted($data, $sig);
+            } else {
+                Output::error('Signature check FAILED');
+            }
+        } catch (\Throwable $e) {
+            Output::error($e->getMessage());
+            return false;
+        }
+    }
+
+    public function userinfo()
+    {
+        try {
+            $shadowname = $_POST['shadowname'];
+
+            $pr = Creator::Privateness();
+            $user = $pr->findShadow($shadowname);
+
+            if (false === $user) {
+                Output::error('User "' . $shadowname . '" not found');
+                return false;
+            }
+
+            $res = $pr->verifyUser2way($_POST['data'], $_POST['sig'], $user);
 
             if (true === $res) {
                 $userinfo = $pr->userinfo($user->getUsername());
 
-                Output::data(['userinfo' => $userinfo]);
+                $data = json_encode(['userinfo' => $userinfo]);
+                $sig = '';
+    
+                $pr->encryptUser2way($data, $sig, $user);
+                Output::encrypted($data, $sig);
             } else {
-                Output::error('User auth ID FAILED');
+                Output::error('Signature check FAILED');
             }
         } catch (\Throwable $e) {
             Output::error($e->getMessage());
@@ -213,15 +317,15 @@ class Node
     public function withdraw()
     {
         try {
-            $username = $_POST['username'];
+            $shadowname = $_POST['shadowname'];
 
             $pr = Creator::Privateness();
-            $user = $pr->findUser($username);
+            $user = $pr->findShadow($shadowname);
 
             // Verification
 
             if (false === $user) {
-                Output::error('User "' . $username . '" not found');
+                Output::error('User "' . $shadowname . '" not found');
                 return false;
             }
 
@@ -263,11 +367,11 @@ class Node
                     . $balance['available'] . ")");
             }
 
-            $pr->withdrawUser($username, $coins, $hours, $to_addr);
+            $pr->withdrawUser($user->getUsername(), $coins, $hours, $to_addr);
 
             // Output::message("Signature check OK\nDecrypt OK");
 
-            $data = "The user $username withdrawed $coins coins and $hours hours to $to_addr";
+            $data = "The user " . $user->getUsername() . " withdrawed $coins coins and $hours hours to $to_addr";
             $sig = '';
 
             $pr->encryptUser2way($data, $sig, $user);

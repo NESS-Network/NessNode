@@ -9,7 +9,7 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "guzzlehttp/guzzle": "^7.0",
-        "christian-riesen/base32": "1.x-dev"
+        "christian-riesen/base32": "1.x-dev",
+        "daverandom/resume": "dev-master"
     }
 }

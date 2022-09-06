@@ -9,13 +9,15 @@ class StorageJson implements Storage {
     private string $users_addr_file;
     private string $users_payments_file;
 
-    public function __construct() {
+    public function __construct() 
+    {
         $this->config = require __DIR__ . '/../../../config/ness.php';
         $this->users_addr_file = $this->config['users_addr_file'];
         $this->users_payments_file = $this->config['users_payments_file'];
     }
 
-    public function readUsers(): array {
+    public function readUsers(): array 
+    {
         if (file_exists($this->users_addr_file)) {
             if(!file_exists($this->users_addr_file)) {
                 throw new \Error("Users file not found");
@@ -33,7 +35,8 @@ class StorageJson implements Storage {
         }
     }
 
-    public function readUser(string $username): array {
+    public function readUser(string $username): array 
+    {
         $users = $this->readUsers();
         if (!empty($users)) {
             if (isset($users[$username])) {
@@ -46,7 +49,24 @@ class StorageJson implements Storage {
         }
     }
 
-    public function writeUser(string $username, string $address = '', int $counter = 0, int $random_hours = 0) {
+
+    public function findUser(string $shadowname): array
+    {
+        $users = $this->readUsers();
+
+        if (!empty($users)) {
+            foreach ($users as $user) {
+                if (isset($user['shadowname']) && ($user['shadowname'] === $shadowname)) {
+                    return $user;
+                }
+            }
+        }
+            
+        return [];
+    }
+
+    public function writeUser(string $username, string $address = '', int $counter = 0, int $random_hours = 0, string $shadowname = '') 
+    {
         $users = $this->readUsers();
 
         if (!empty($address)) {
@@ -61,6 +81,10 @@ class StorageJson implements Storage {
             $users[$username]['random_hours'] = $random_hours;
         }
 
+        if (!empty($shadowname)) {
+            $users[$username]['shadowname'] = $shadowname;
+        }
+
         try {
             file_put_contents($this->users_addr_file, json_encode($users));
         } catch (\Throwable $th) {
@@ -68,7 +92,8 @@ class StorageJson implements Storage {
         }
     }
 
-    public function readPayments(): array {
+    public function readPayments(): array 
+    {
         if (file_exists($this->users_payments_file)) {
             return json_decode(file_get_contents($this->users_payments_file), true);
         } else {
@@ -76,7 +101,8 @@ class StorageJson implements Storage {
         }
     }
 
-    public function writePayment(string $username, string $date, int $hours, int $coin_hours_payed, string $txid) {
+    public function writePayment(string $username, string $date, int $hours, int $coin_hours_payed, string $txid) 
+    {
         $payments = $this->readPayments();
 
         $payments[$username] = [

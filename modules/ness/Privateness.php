@@ -122,25 +122,39 @@ class Privateness
     }
 
     /**
+     * Generate users shadowname
+     * Shadowname = MD5(Username-node.url-node.nonce-username-user.nonce)
+     * 
+     * @param string $username
+     * @return boolean
+     */
+    private function generateShadowname(User $user): string
+    {
+        return md5($user->getUsername() . "-$this->host-$this->nonce-" . $user->getNonce());
+    }
+
+    /**
      * Registered user address
      *
      * @param string $username
      * @return void
      */
-    public function getUserAddress(string $username)
+    public function register(User $user)
     {
+        $username = $user->getUsername();
+
         if ($this->isMasterUser($username)) {
             if (empty($this->users[$username])) {
                 $ness = new ness();
                 $result = $ness->createAddr();
                 $addr = $result['addresses'][0];
 
-                $this->storage->writeUser($username, $addr);
+                $this->storage->writeUser($username, $addr, 0, 0, $this->generateShadowname($user));
+                $this->users = $this->storage->readUsers();
 
-                return $addr;
+                return true;
             } else {
-                $user = $this->users[$username];
-                return $user['addr'];
+                return false;
             }
         } else {
             if (empty($this->users[$username])) {
@@ -149,11 +163,12 @@ class Privateness
                 $result = $ness->createAddr();
                 $addr = $result['addresses'][0];
 
-                $this->storage->writeUser($username, $addr, 0, $this->getRandomCounterHours());
+                $this->storage->writeUser($username, $addr, 0, $this->getRandomCounterHours(), $this->generateShadowname($user));
+                $this->users = $this->storage->readUsers();
 
-                return $addr;
+                return true;
             } else {
-                return $this->users[$username]["addr"];
+                return false;
             }
         }
     }
@@ -181,6 +196,20 @@ class Privateness
         return sodium_crypto_sign_verify_detached(Base32::decode($authID), $message, base64_decode($user->getVerify()));
     }
 
+    public static function verifyAlternativeID(string $alternativeID, string $username, string $user_nonce, string $user_verify, string $node_url, string $node_nonce)
+    {
+        // verify(user_public_key, “node.url-node.nonce-username-user.nonce-alternative”, alternative_authentication_id)
+        $message = $node_url . '-' . $node_nonce . '-' . $username . '-' . $user_nonce . '-alternative';
+        return sodium_crypto_sign_verify_detached(Base32::decode($alternativeID), $message, base64_decode($user_verify));
+    }
+
+    public function verifyAlternativeUserId(string $alternativeID, User $user)
+    {
+        // verify(user_public_key, “node.url-node.nonce-username-user.nonce-alternative”, alternative_authentication_id)
+        $message = $this->host . '-' . $this->nonce . '-' . $user->getUsername() . '-' . $user->getNonce() . '-alternative';
+        return sodium_crypto_sign_verify_detached(Base32::decode($alternativeID), $message, base64_decode($user->getVerify()));
+    }
+
     /**
      * Two-Way-Authentication: verifying Auth-ID
      *
@@ -191,12 +220,12 @@ class Privateness
      */
     public static function verify2way(string $data, string $sig, string $user_verify)
     {
-        sodium_crypto_sign_verify_detached(Base32::decode($sig), $data, base64_decode($user_verify));
+        return sodium_crypto_sign_verify_detached(Base32::decode($sig), $data, base64_decode($user_verify));
     }
 
     public function verifyUser2way(string $data, string $sig, User $user)
     {
-        sodium_crypto_sign_verify_detached(Base32::decode($sig), $data, base64_decode($user->getVerify()));
+        return sodium_crypto_sign_verify_detached(Base32::decode($sig), $data, base64_decode($user->getVerify()));
     }
 
     /**
@@ -484,7 +513,7 @@ class Privateness
     public function payUsers()
     {
         foreach ($this->users as $username => $user) {
-            if ($this->isActive($username)) {
+            if (!$this->isMasterUser($username) && $this->isActive($username)) {
                 $this->payUser($username);
             }
         }
@@ -572,27 +601,49 @@ class Privateness
     }
 
     /**
-     * Find user everywhere by username or userhash
+     * Find user everywhere by username
      */
-    public function findUser(string $username_or_userhash): User|bool
+    public function findUser(string $username): User|bool
     {
         $emer = new Emer();
 
-        $user = $emer->findUser($username_or_userhash);
+        $users = $this->listLocalUsers();
+        
+        foreach ($users as $user_name => $local_user) {
+            if ($user_name === $username) {
+                $user = $emer->findUser($username);
+                if (!empty($user['value']) && Worm::isUser($user['value'])) {
+                    $user = Worm::parseUser($user['value']);
+                    return new User($username, $local_user['addr'], $local_user['shadowname'], $user['type'], $user['nonce'], $user['tags'], $user['public'], $user['verify']);
+                }
+            }
+        }
+
+        $user = $emer->findUser($username);
 
         if (false !== $user && Worm::isUser($user['value'])) {
             $user = Worm::parseUser($user['value']);
-            return new User($username_or_userhash, $user['type'], $user['nonce'], $user['tags'], $user['public'], $user['verify']);
+            return new User($username, '', '', $user['type'], $user['nonce'], $user['tags'], $user['public'], $user['verify']);
         }
+
+        return false;
+    }
+
+    /**
+     * Find user localy by shadowname
+     */
+    public function findShadow(string $shadowname): User|bool
+    {
+        $emer = new Emer();
 
         $users = $this->listLocalUsers();
         
-        foreach ($users as $username => $user) {
-            if ($username_or_userhash === md5($username . '-' . $this->host . '-' . $this->nonce)) {
+        foreach ($users as $username => $local_user) {
+            if (isset($local_user['shadowname']) && ($shadowname === $local_user['shadowname'])) {
                 $user = $emer->findUser($username);
                 if (Worm::isUser($user['value'])) {
                     $user = Worm::parseUser($user['value']);
-                    return new User($username, $user['type'], $user['nonce'], $user['tags'], $user['public'], $user['verify']);
+                    return new User($username, $local_user['addr'], $shadowname, $user['type'], $user['nonce'], $user['tags'], $user['public'], $user['verify']);
                 }
             }
         }
