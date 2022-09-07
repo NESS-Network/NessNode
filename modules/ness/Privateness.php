@@ -130,7 +130,7 @@ class Privateness
      */
     private function generateShadowname(User $user): string
     {
-        return md5($user->getUsername() . "-$this->host-$this->nonce-" . $user->getNonce());
+        return md5($user->getUsername() . "-$this->host-$this->nonce-" . $user->getNonce() . ': ' . time());
     }
 
     /**

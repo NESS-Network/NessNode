@@ -194,7 +194,10 @@ class Node
 
                 $user = $pr->findUser($username);
                 // Output::data(['address' => $addr, 'shadowname' => $user->getShadowname()]);
-                $data = json_encode(['address' => $user->getAddress(), 'shadowname' => $user->getShadowname()]);
+                $data = json_encode([
+                    'address' => $user->getAddress(), 
+                    'shadowname' => $user->getShadowname()
+                ]);
                 $sig = '';
 
                 $pr->encryptUser2way($data, $sig, $user);
