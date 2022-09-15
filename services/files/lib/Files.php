@@ -6,19 +6,34 @@ use services\files\exceptions\EConfigError;
 
 class Files {
 
+    private static array $files_config;
+
     public static function loadConfig (): array 
     {
-        $files_config = require __DIR__ . '/../../../config/files.php';
+        if (!empty(self::$files_config)) {
+            return self::$files_config;
+        }
 
-        if (!isset($files_config['quota'])) {
+        self::$files_config = require __DIR__ . '/../../../config/files.php';
+
+        if (!isset(self::$files_config['quota'])) {
             throw new EConfigError("files.json", "quota");
         }
 
-        if (!isset($files_config['dir'])) {
+        if (!isset(self::$files_config['dir'])) {
             throw new EConfigError("files.json", "dir");
         }
 
-        return $files_config;
+        if (!isset(self::$files_config['salt'])) {
+            throw new EConfigError("files.json", "dir");
+        }
+
+        return self::$files_config;
+    }
+
+    public static function fileID (string $filename)
+    {
+        return sha1($filename . self::loadConfig ()['salt']);
     }
 
     public static function translateQuota (string $quota): int 
@@ -38,6 +53,23 @@ class Files {
         }
 
         return $quota_size;
+    }
+
+    public static function quota (string $username)
+    {
+        $files_config = Files::loadConfig();
+
+        $quota = strtolower($files_config['quota']);
+
+        $total = Files::translateQuota($quota);
+        $used = Files::calcSpace($username);
+        $free = $total - $used;
+
+        return ['quota' => [
+            'total' => $total,
+            'used' => $used,
+            'free' => $free
+        ]];
     }
 
     public static function checkStoragePath () 
@@ -91,11 +123,44 @@ class Files {
         return $bytes;
     }
 
+    public static function findFile (string $username, string $file_id): string|bool
+    {
+        $dir = self::checkUserPath($username);
+        $list = glob($dir . '/*.*');
+
+        if (false === $list) {
+            return false;
+        }
+
+        foreach ($list as $filename) {
+            $basename = basename($filename);
+            if ($file_id === self::fileID($basename)) {
+                return $basename;
+            }
+        }
+
+        return false;
+    }
+
     public static function listFiles (string $username): array|bool 
     {
         $dir = self::checkUserPath($username);
+        $list = glob($dir . '/*.*');
+        $filelist = [];
 
-        return glob($dir . '/*.*');
+        if (false === $list) {
+            return false;
+        }
+
+        foreach ($list as $filename) {
+            $basename = basename($filename);
+            $filelist[$basename] = [
+                'id' => self::fileID($basename),
+                'size' => filesize($filename)
+            ];
+        }
+
+        return $filelist;
     }
 
     public static function fileinfo (string $username, string $filename): array|bool 
@@ -108,12 +173,11 @@ class Files {
 
         $fullname = $userpath . DIRECTORY_SEPARATOR . $filename;
 
-        // filename, size, id
-
-        return [$filename => [
+        return [
+            "filename" => $filename,
             'size' => filesize($fullname),
-            'id' => 0
-        ]];
+            'id' => self::fileID($filename)
+        ];
     }
 
     public static function filesize (string $username, string $filename): int|bool 
@@ -125,5 +189,20 @@ class Files {
         }
 
         return filesize($userpath . DIRECTORY_SEPARATOR . $filename);
+    }
+
+    public static function filename (string $filename): string|bool
+    {
+        $invchars = ['<', '>', '|', '\\', ':', '&', ';', '*', '?'];
+        $filename = explode('/', $filename);
+        $filename = $filename[count($filename) - 1];
+
+        foreach ($invchars as $char) {
+            if (false !== strpos($filename, $char)) {
+                return false;
+            }
+        }
+
+        return $filename;
     }
 }

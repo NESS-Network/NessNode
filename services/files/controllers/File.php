@@ -26,37 +26,184 @@ class File {
 
     public function man()
     {
-        Output::text(file_get_contents(__DIR__ . '/../../../etc/manual.txt'));
+        Output::text('Manual');
     }
 
-    public function quota(string $username, $id)
+    public function quota()
+    {
+        try {
+            if (empty($_POST['username'])) {
+                Output::error('Param username not found');
+                return false;
+            }
+
+            $shadowname = $_POST['username'];
+
+            $pr = Creator::Privateness();
+            $user = $pr->findShadow($shadowname);
+
+            if (false === $user) {
+                Output::error('User "' . $shadowname . '" not found');
+                return false;
+            }
+
+            $res = $pr->verifyUser2way($_POST['data'], $_POST['sig'], $user);
+
+            if (true === $res) {
+                $data = json_encode(Files::quota($user->getUsername()));
+                $sig = '';
+    
+                $pr->encryptUser2way($data, $sig, $user);
+                Output::encrypted($data, $sig);
+            } else {
+                Output::error('Signature check FAILED');
+            }
+        } catch (\Throwable $e) {
+            Output::error($e->getMessage());
+            return false;
+        }
+    }
+
+    public function list()
+    {
+        try {
+            if (empty($_POST['username'])) {
+                Output::error('Param username not found');
+                return false;
+            }
+
+            $shadowname = $_POST['username'];
+
+            $pr = Creator::Privateness();
+            $user = $pr->findShadow($shadowname);
+
+            if (false === $user) {
+                Output::error('User "' . $shadowname . '" not found');
+                return false;
+            }
+
+            $res = $pr->verifyUser2way($_POST['data'], $_POST['sig'], $user);
+
+            if (true === $res) {
+                $data = json_encode(['files' => Files::listFiles( $user->getUsername())]);
+                $sig = '';
+    
+                $pr->encryptUser2way($data, $sig, $user);
+                Output::encrypted($data, $sig);
+            } else {
+                Output::error('Signature check FAILED');
+            }
+        } catch (\Throwable $e) {
+            Output::error($e->getMessage());
+            return false;
+        }
+    }
+
+    public function fileinfo()
+    {
+        try {
+            if (empty($_POST['username'])) {
+                Output::error('Param username not found');
+                return false;
+            }
+
+            if (empty($_POST['file_id'])) {
+                Output::error('Param file_id not found');
+                return false;
+            }
+
+            $shadowname = $_POST['username'];
+            $file_id = $_POST['file_id'];
+
+            $pr = Creator::Privateness();
+            $user = $pr->findShadow($shadowname);
+
+            if (false === $user) {
+                Output::error('User "' . $shadowname . '" not found');
+                return false;
+            }
+
+            $res = $pr->verifyUser2way($_POST['data'], $_POST['sig'], $user);
+
+            if (true === $res) {
+                $filename = Files::findFile($user->getUsername(), $file_id);
+
+                if (false === $filename) {
+                    Output::error("File $filename not found");
+                    return false;
+                }
+
+                $fileinfo = Files::fileinfo($user->getUsername(), $filename);
+
+                if (false === $fileinfo) {
+                    Output::error("Can not extract fileinfo for $filename");
+                    return false;
+                }
+
+                $data = json_encode($fileinfo);
+                $sig = '';
+    
+                $pr->encryptUser2way($data, $sig, $user);
+                Output::encrypted($data, $sig);
+            } else {
+                Output::error('Signature check FAILED');
+            }
+        } catch (\Throwable $e) {
+            Output::error($e->getMessage());
+            return false;
+        }
+    }
+
+    public function download(string $file_id, string $username, string $id)
     {
         try {
             $pr = Creator::Privateness();
-            $user = $pr->findUser($username);
+            $user = $pr->findShadow($username);
 
             if (false === $user) {
                 Output::error('User "' . $username . '" not found');
                 return false;
             }
 
-            // verify(user_public_key, “node.url-node.nonce-username-user.nonce”, authentication_id)
             $res = $pr->verifyUserId($id, $user);
 
             if (true === $res) {
-                $files_config = Files::loadConfig();
+                $filename = Files::findFile($user->getUsername(), $file_id);
 
-                $quota = strtolower($files_config['quota']);
+                if (false === $filename) {
+                    Output::error("File $filename not found");
+                    // header("HTTP/1.1 404 Not Found");
+                    return false;
+                }
 
-                $total = Files::translateQuota($quota);
-                $used = Files::calcSpace($user->getUsername());
-                $free = $total - $used;
+                $fullname = Files::checkUserPath($user->getUsername()) . '/' . $filename;
 
-                Output::data(['quota' => [
-                    'total' => $total,
-                    'used' => $used,
-                    'free' => $free
-                ]]);
+                // $mime = mime_content_type($fullname);
+                $contentType = 'application/octet-stream';
+
+                try {
+                    // Note that this construct will still work if the client did not specify a Range: header
+                    $rangeHeader = \DaveRandom\Resume\get_request_header('Range');
+                    $rangeSet = \DaveRandom\Resume\RangeSet::createFromHeader($rangeHeader);
+                
+                    /** @var \DaveRandom\Resume\Resource $resource */
+                    $resource = new \DaveRandom\Resume\FileResource($fullname , $contentType);
+                    $servlet = new \DaveRandom\Resume\ResourceServlet($resource);
+                
+                    $servlet->sendResource($rangeSet);
+                } catch (\DaveRandom\Resume\InvalidRangeHeaderException $e) {
+                    header("HTTP/1.1 400 Bad Request");
+                } catch (\DaveRandom\Resume\UnsatisfiableRangeException $e) {
+                    header("HTTP/1.1 416 Range Not Satisfiable");
+                } catch (\DaveRandom\Resume\UnreadableFileException $e) {
+                    header("HTTP/1.1 500 Internal Server Error");
+                } catch (\DaveRandom\Resume\SendFileFailureException $e) {
+                    if (!headers_sent()) {
+                        header("HTTP/1.1 500 Internal Server Error");
+                    }
+                
+                    echo "An error occurred while attempting to send the requested resource: {$e->getMessage()}";
+                }
             } else {
                 Output::error('User auth ID FAILED');
             }
@@ -66,22 +213,218 @@ class File {
         }
     }
 
-    public function list(string $username, $id)
+    public function touch()
+    {
+        try {
+            if (empty($_POST['username'])) {
+                Output::error('Param username not found');
+                return false;
+            }
+
+            if (empty($_POST['filename'])) {
+                Output::error('Param filename not found');
+                return false;
+            }
+
+            $shadowname = $_POST['username'];
+            $filename = $_POST['filename'];
+
+            $pr = Creator::Privateness();
+            $user = $pr->findShadow($shadowname);
+
+            if (false === $user) {
+                Output::error('User "' . $shadowname . '" not found');
+                return false;
+            }
+
+            if (Files::quota($user->getUsername())['quota']['free'] <= 0) {
+                Output::error('All disk space quota used');
+                return false;
+            }
+
+            $res = $pr->verifyUser2way($_POST['data'], $_POST['sig'], $user);
+
+            if (true === $res) {
+                $filename = $pr->decryptUser2way($filename);
+                $oldfilename = $filename;
+                $filename = Files::filename($filename);
+
+                if (false === $filename) {
+                    Output::error("Invalid filename '$oldfilename'");
+                    return false;
+                }
+
+                $fullname = Files::checkUserPath($user->getUsername()) . '/' . $filename;
+
+                if (file_exists($fullname)) {
+                    $data = json_encode(['size' => filesize($fullname), 'id' => Files::fileID($filename)]);
+                    $sig = '';
+        
+                    $pr->encryptUser2way($data, $sig, $user);
+                    Output::encrypted($data, $sig);
+
+                    return True;
+                }
+
+                $file = fopen($fullname, 'w'); 
+                fclose($file);
+                $data = json_encode(['size' => 0, 'id' => Files::fileID($filename)]);
+                $sig = '';
+    
+                $pr->encryptUser2way($data, $sig, $user);
+                Output::encrypted($data, $sig);
+            } else {
+                Output::error('User auth ID FAILED');
+            }
+        } catch (\Throwable $e) {
+            Output::error($e->getMessage());
+            return false;
+        }
+    }
+
+    public function remove()
+    {
+        try {
+            if (empty($_POST['username'])) {
+                Output::error('Param username not found');
+                return false;
+            }
+
+            if (empty($_POST['file_id'])) {
+                Output::error('Param file_id not found');
+                return false;
+            }
+
+            $shadowname = $_POST['username'];
+            $file_id = $_POST['file_id'];
+
+            $pr = Creator::Privateness();
+            $user = $pr->findShadow($shadowname);
+
+            if (false === $user) {
+                Output::error('User "' . $shadowname . '" not found');
+                return false;
+            }
+
+            $res = $pr->verifyUser2way($_POST['data'], $_POST['sig'], $user);
+
+            if (true === $res) {
+                $filename = Files::findFile($user->getUsername(), $file_id);
+                $fullname = Files::checkUserPath($user->getUsername()) . '/' . $filename;
+
+                $res = unlink($fullname);
+
+                if (false === $res) {
+                    Output::error('Param file_id not found');
+                    return false;
+                }
+
+                $data = 'OK';
+                $sig = '';
+    
+                $pr->encryptUser2way($data, $sig, $user);
+                Output::encrypted($data, $sig);
+            } else {
+                Output::error('User auth ID FAILED');
+            }
+        } catch (\Throwable $e) {
+            Output::error($e->getMessage());
+            return false;
+        }
+    }
+
+    public function append(string $file_id, string $username,  string $id)
     {
         try {
             $pr = Creator::Privateness();
-            $user = $pr->findUser($username);
+            $user = $pr->findShadow($username);
 
             if (false === $user) {
                 Output::error('User "' . $username . '" not found');
                 return false;
             }
 
-            // verify(user_public_key, “node.url-node.nonce-username-user.nonce”, authentication_id)
+            if (Files::quota($user->getUsername())['quota']['free'] <= 0) {
+                Output::error('All disk space quota used');
+                return false;
+            }
+
             $res = $pr->verifyUserId($id, $user);
 
             if (true === $res) {
-                Output::data(['files' => Files::listFiles($user->getUsername())]);
+                $filename = Files::findFile($user->getUsername(), $file_id);
+
+                if (false === $filename) {
+                    header("HTTP/1.1 404 Not Found");
+                    Output::error("File $filename not found");
+                    return false;
+                }
+
+                $fullname = Files::checkUserPath($user->getUsername()) . '/' . $filename;
+
+                $post_body = file_get_contents('php://input');
+
+                file_put_contents($fullname, $post_body, FILE_APPEND);
+
+                Output::data(['size' => filesize($fullname)]);
+            } else {
+                Output::error('User auth ID FAILED');
+            }
+        } catch (\Throwable $e) {
+            Output::error($e->getMessage());
+            return false;
+        }
+    }
+
+    public function pub(string $file_id, string $username, string $id)
+    {
+        try {
+            $pr = Creator::Privateness();
+            $user = $pr->findShadow($username);
+
+            if (false === $user) {
+                Output::error('User "' . $username . '" not found');
+                return false;
+            }
+
+            $res = $pr->verifyAlternativeUserId($id, $user);
+
+            if (true === $res) {
+                $filename = Files::findFile($user->getUsername(), $file_id);
+
+                if (false === $filename) {
+                    Output::error("File $filename not found");
+                    // header("HTTP/1.1 404 Not Found");
+                    return false;
+                }
+
+                $fullname = Files::checkUserPath($user->getUsername()) . '/' . $filename;
+
+                $contentType = 'application/octet-stream';
+
+                try {
+                    // Note that this construct will still work if the client did not specify a Range: header
+                    $rangeHeader = \DaveRandom\Resume\get_request_header('Range');
+                    $rangeSet = \DaveRandom\Resume\RangeSet::createFromHeader($rangeHeader);
+                
+                    /** @var \DaveRandom\Resume\Resource $resource */
+                    $resource = new \DaveRandom\Resume\FileResource($fullname , $contentType);
+                    $servlet = new \DaveRandom\Resume\ResourceServlet($resource);
+                
+                    $servlet->sendResource($rangeSet);
+                } catch (\DaveRandom\Resume\InvalidRangeHeaderException $e) {
+                    header("HTTP/1.1 400 Bad Request");
+                } catch (\DaveRandom\Resume\UnsatisfiableRangeException $e) {
+                    header("HTTP/1.1 416 Range Not Satisfiable");
+                } catch (\DaveRandom\Resume\UnreadableFileException $e) {
+                    header("HTTP/1.1 500 Internal Server Error");
+                } catch (\DaveRandom\Resume\SendFileFailureException $e) {
+                    if (!headers_sent()) {
+                        header("HTTP/1.1 500 Internal Server Error");
+                    }
+                
+                    echo "An error occurred while attempting to send the requested resource: {$e->getMessage()}";
+                }
             } else {
                 Output::error('User auth ID FAILED');
             }

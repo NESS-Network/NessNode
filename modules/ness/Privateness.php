@@ -90,6 +90,11 @@ class Privateness
         ness::$password = $this->config['password'];
     }
 
+    public function buildURL(string $service, string $method)
+    {
+        return $this->host . '/' . $service . '/' . $method;
+    }
+
     /**
      * Random amount of hours until next user payment
      *
