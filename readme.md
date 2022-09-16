@@ -1,17 +1,16 @@
-# Ness node DEMO
+# Ness Service Node
 
-This is first version of NESS node with only basic functionality and two services node and prng
+This is Privatess Service Node, a place for different microservices
+
+At the moment there are 3 services
+
 Devblog https://ness-main-dev.medium.com/
 
-## TODO
-
- * Authentication - DONE
- * Ness coin hours - DONE
 
 ## Instalation
 
  * Apache
- * PHP 7.4+
+ * PHP 8.0+
  * Emercoin daemon with JsonRPC connection configured in `~/.emercoin/emercoin.conf` and `modules/emer/config/emercoin.php`
  * Clone PRNG from https://github.com/NESS-Network/PyUHEPRNG and run `python server.py` to launch random number generator
  * Change systemd configuration for apache in `/lib/systemd/apache2.service` or in `/lib/systemd/system/httpd.service` change the `PrivateTmp=false` to make `/tmp/*` directory readable

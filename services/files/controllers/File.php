@@ -237,6 +237,11 @@ class File {
                 return false;
             }
 
+            if (!$pr->isActive($user->getUsername())) {
+                Output::error('User "' . $user->getUsername() . '" is Inactive');
+                return false;
+            }
+
             if (Files::quota($user->getUsername())['quota']['free'] <= 0) {
                 Output::error('All disk space quota used');
                 return false;
@@ -306,6 +311,11 @@ class File {
                 return false;
             }
 
+            if (!$pr->isActive($user->getUsername())) {
+                Output::error('User "' . $user->getUsername() . '" is Inactive');
+                return false;
+            }
+
             $res = $pr->verifyUser2way($_POST['data'], $_POST['sig'], $user);
 
             if (true === $res) {
@@ -341,6 +351,11 @@ class File {
 
             if (false === $user) {
                 Output::error('User "' . $username . '" not found');
+                return false;
+            }
+
+            if (!$pr->isActive($user->getUsername())) {
+                Output::error('User "' . $user->getUsername() . '" is Inactive');
                 return false;
             }
 
@@ -384,6 +399,11 @@ class File {
 
             if (false === $user) {
                 Output::error('User "' . $username . '" not found');
+                return false;
+            }
+
+            if (!$pr->isActive($user->getUsername())) {
+                Output::error('User "' . $username . '" is Inactive');
                 return false;
             }
 
