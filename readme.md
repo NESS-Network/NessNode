@@ -4,6 +4,10 @@ This is Privatess Service Node, a place for different microservices
 
 At the moment there are 3 services
 
+1. Node service - service for registration and for displaying different information about current service node and current user
+2. PRNG service - service for generation ultra-high entropy random data
+3. Files service - a file storage and sharing service
+
 Devblog https://ness-main-dev.medium.com/
 
 
@@ -31,8 +35,10 @@ All data is sent in HTTP POST or GET request and returned in JSON format
  * `http://node-url/node/man`display manual
  * `http://node-url/node/pub`display node public key (encryption key)
  * `http://node-url/node/verify`display node verify key (sign/verify key)
- * `http://node-url/node/testAuthId/username/auth-id`test authentication by Auth ID
- * `http://node-url/node/testAuthTwoWay`test authentication by Two Way Encryption
+ * `http://node-url/node/test/auth/username/auth-id`test authentication by Auth ID
+ * `http://node-url/node/test/auth`test authentication by Two Way Encryption
+ * `http://node-url/node/test/auth-shadow/username/auth-id`test authentication by Auth ID using shadowname
+ * `http://node-url/node/test/auth-shadow`test authentication by Two Way Encryption using shadowname
  * `http://node-url/node/get-address/username/auth-id`
    Get user payment address or return existing one (Auth ID)
    Returned data: `{data: {address: 784y5t4787ytw487yt}}
@@ -56,6 +62,32 @@ hours - total hours
 fee - fee substracted from hours
 
 available - available hours for withdraw
+ * `http://node-url/node/userinfo`
+ Returned data: `{data: {userinfo: {'joined': True, 'is_active': True, 'balance': 1.00000}}}`
+
+  joined - is user joined (registered)
+
+  is_active - is user active (balance > counter)
+
+  balance - total user balance
+
+ * `http://node-url/node/join`
+ Returned data: `{data: {'address': shdfgih5gh4, 'shadowname': rt9gj498h495h}`
+
+  address - Internal NESS address of user
+
+  shadowname - internal name of user (shadowname)
+
+ * `http://node-url/node/joined`
+  Returned data: `{data: {'joined': True, 'address': shdfgih5gh4, 'shadowname': rt9gj498h495h}`
+ OR `{data: {'joined': False}}` (is not joined (registered))
+
+  joined - is user joined (registered)
+
+  address - Internal NESS address of user
+
+  shadowname - internal name of user (shadowname)
+
  * `http://node-url/node/withdraw`
  
  Withdraw coins and hours (Two Way Encryption)
@@ -77,7 +109,7 @@ to_addr - external address, where to withdraw
   * `http://node-url/prng/numbers/username/auth-id` - Random generated large SEED 
   * `http://node-url/prng/numbersb/username/auth-id` - Big ammount of random generated 
  
-### Config files
+#### Config files
 ##### ~/.ness
 * `emer.json` Connection to emercoin RPC
 * `ness.json` Connection to PrivateNess daemon
@@ -85,12 +117,23 @@ to_addr - external address, where to withdraw
 * `payments.json`Payments list
 * `prng.json` PRNG service config
 * `users.json` Users list - users address, counter and random-hours
+* `files.json` Files service config
 
 ### prng
  * `/prng/seed` output randomly generated seed (regenerated every second)
  * `/prng/seedb` output randomly generated big seed (regenerated every second)
  * `/prng/numbers` output randomly generated numbers (100) (regenerated every second)
  * `/prng/numbersb` output randomly generated numbers (1000) (regenerated every second)
+
+### Files
+ * `/files/quota` disk usage quota for current user
+ * `/files/list` file list
+ * `/files/fileinfo` fileinfo for selected file
+ * `/files/download/$file_id/$shadowname/$auth-id` download selected file (with resume support)
+ * `/files/touch` create selected file
+ * `/files/remove` remove selected file
+ * `/files/append/$file_id/$shadowname/$auth-id` upload and a block of new file and append it to existing file (created by touch)
+ * `/files/pub/$file_id-$shadowname-$auth-id` download selected file (public use), (with resume support)
 
 ## Testing
 You can generate test users (without blockchain) to test [Counter Random Payments](https://ness-main-dev.medium.com/counter-random-payment-12813584826f)
@@ -132,8 +175,8 @@ Usage: `php test.php <username>`pay for single hour (similar as exec/cron.php bu
 * verify - verify public key
 * public - encryption public key
 * nonce - salt
-* master-user - Master user name (the user being payed every hour for node usage)
-* tarif -how mush Hours the node cost for one hour
+* master - user - Master user name (the user being payed every hour for node usage)
+* tarif - how mush Hours the node cost for one hour
 
 ##### user WORM file
 *Emercoin blockchain record*
