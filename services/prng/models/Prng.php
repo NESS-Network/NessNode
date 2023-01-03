@@ -14,7 +14,7 @@ class Prng {
 
     public function __construct() {
         $config = require __DIR__ . '/../config/prng.php';
-        var_dump($config);
+        // var_dump($config);
         $this->seed = $config['seed'];
         $this->seedb = $config['seed-big'];
         $this->numbers = $config['numbers'];
