@@ -96,6 +96,8 @@ class Emer
             $result = [];
 
             foreach ($nodes as $node) {
+                $node = Emercoin::name_show($node['name'], 'base64');
+
                 $name = $node['name'];
                 $name = explode(':', $name);
                 $name = array_slice($name, 3);
@@ -126,6 +128,8 @@ class Emer
             $result = [];
 
             foreach ($users as $user) {
+                $user = Emercoin::name_show($user['name'], 'base64');
+
                 $name = $user['name'];
                 $name = explode(':', $name);
                 $name = array_slice($name, 3);

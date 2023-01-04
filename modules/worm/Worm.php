@@ -3,7 +3,8 @@ namespace modules\worm;
 
 class Worm {
 
-    public static function isUser(string $xml): bool {
+    public static function isUser(string $xml): bool 
+    {
         $xml = preg_replace("/<!--.+?-->/i", '', $xml);
         $xml = preg_replace('/”/i', '"', $xml);
         $xmlObject = simplexml_load_string($xml);
@@ -15,7 +16,8 @@ class Worm {
         return true;
     }
 
-    public static function parseUser(string $xml): array {
+    public static function parseUser(string $xml): array 
+    {
         $xml = preg_replace("/<!--.+?-->/i", '', $xml);
         $xml = preg_replace('/”/i', '"', $xml);
         $xmlObject = simplexml_load_string($xml);
@@ -26,7 +28,8 @@ class Worm {
         $public_key = '';
         $verify_key = '';
 
-        foreach ($xmlObject->user->keys->key as $key) {
+        foreach ($xmlObject->user->keys->key as $key) 
+        {
             if ( isset($key['current']) ) {
                 $public_key = (string) $key['public'];
                 $verify_key = (string) $key['verify'];
@@ -44,7 +47,8 @@ class Worm {
         ];
     }
 
-    public static function isNode(string $xml): bool {
+    public static function isNode(string $xml): bool 
+    {
         $xml = preg_replace("/<!--.+?-->/i", '', $xml);
         $xml = preg_replace('/”/i', '"', $xml);
         $xmlObject = simplexml_load_string($xml);
@@ -53,10 +57,31 @@ class Worm {
             return false;
         }
 
+        if ('ness' !== (string) $xmlObject->node['type']) {
+            return false;
+        }
+
+        if (empty( $xmlObject->node['url'])) {
+            return false;
+        }
+
+        if (empty( $xmlObject->node['nonce'])) {
+            return false;
+        }
+
+        if (empty( $xmlObject->node['public'])) {
+            return false;
+        }
+
+        if (empty( $xmlObject->node['verify'])) {
+            return false;
+        }
+
         return true;
     }
 
-    public static function parseNode(string $xml): array {
+    public static function parseNode(string $xml): array 
+    {
         $xml = preg_replace("/<!--.+?-->/i", '', $xml);
         $xml = preg_replace('/”/i', '"', $xml);
         $xmlObject = simplexml_load_string($xml);
@@ -65,6 +90,9 @@ class Worm {
         $url = (string) $xmlObject->node['url'];
         $nonce = (string) $xmlObject->node['nonce'];
         $tags = (string) $xmlObject->node['tags'];
+        $public = (string) $xmlObject->node['public'];
+        $verify = (string) $xmlObject->node['verify'];
+        $tariff = (float) $xmlObject->node['tariff'];
 
         $tags = explode(',', $tags);
 
@@ -72,7 +100,10 @@ class Worm {
             'type' => $type,
             'url' => $url,
             'nonce' => $nonce,
-            'tags' => $tags
+            'tags' => $tags,
+            'public' => $public,
+            'verify' => $verify,
+            'tariff' => $tariff
         ];
     }
 }
