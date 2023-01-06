@@ -549,7 +549,7 @@ class Privateness
         // var_dump($nodes);
         foreach ($nodes as $name => $value) {
             if (Worm::isNode($value)) {
-                $result[] = Worm::parseNode($value);
+                $result[$name] = Worm::parseNode($value);
             }
         }
 
