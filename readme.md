@@ -14,7 +14,7 @@ Devblog https://ness-main-dev.medium.com/
 ## Instalation
 
  * Apache
- * PHP 8.0+ with php-curl mod
+ * PHP 8.0+ with *php-curl* and *php-xml* mods
  * Emercoin daemon with JsonRPC connection configured in `~/.emercoin/emercoin.conf` and `modules/emer/config/emercoin.php`
  * Clone PRNG from https://github.com/NESS-Network/PyUHEPRNG and run `python server.py` to launch random number generator
  * Change systemd configuration for apache in `/lib/systemd/apache2.service` or in `/lib/systemd/system/httpd.service` change the `PrivateTmp=false` to make `/tmp/*` directory readable
