@@ -19,10 +19,6 @@ class StorageJson implements Storage {
     public function readUsers(): array 
     {
         if (file_exists($this->users_addr_file)) {
-            if(!file_exists($this->users_addr_file)) {
-                throw new \Error("Users file not found");
-            } 
-
             $data = json_decode(file_get_contents($this->users_addr_file), true);
             
             if (empty($data))  {

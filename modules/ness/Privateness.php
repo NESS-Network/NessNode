@@ -170,7 +170,7 @@ class Privateness
 
                 $this->storage->writeUser($username, $addr, 0, $this->getRandomCounterHours(), $this->generateShadowname($user));
                 $this->users = $this->storage->readUsers();
-
+                file_put_contents(__DIR__ . '/../../log/log.txt', json_encode($this->users));
                 return true;
             } else {
                 return false;

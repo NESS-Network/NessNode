@@ -256,7 +256,7 @@ class Node
     public function balance()
     {
         try {
-            $shadowname = $_POST['shadowname'];
+            $shadowname = $_POST['username'];
 
             $pr = Creator::Privateness();
             $user = $pr->findShadow($shadowname);
@@ -288,7 +288,7 @@ class Node
     public function userinfo()
     {
         try {
-            $shadowname = $_POST['shadowname'];
+            $shadowname = $_POST['username'];
 
             $pr = Creator::Privateness();
             $user = $pr->findShadow($shadowname);
@@ -320,7 +320,7 @@ class Node
     public function withdraw()
     {
         try {
-            $shadowname = $_POST['shadowname'];
+            $shadowname = $_POST['username'];
 
             $pr = Creator::Privateness();
             $user = $pr->findShadow($shadowname);
