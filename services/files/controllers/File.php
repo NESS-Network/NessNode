@@ -325,7 +325,7 @@ class File {
                 $res = unlink($fullname);
 
                 if (false === $res) {
-                    Output::error('Param file_id not found');
+                    Output::error('Param file_id not found ' . $file_id );
                     return false;
                 }
 
