@@ -183,18 +183,7 @@ Usage: `php test.php <username>`pay for single hour (similar as exec/cron.php bu
 `worm:user:ness:user`
 ```xml
 <worm>
-        <user type="ness" nonce="R04rQis5hP2EfILpAGuU8Q==" tags="Hello World,test">
-                <keys>
-                        <key public="rGSy2GhojuHX+4bgE5CtRZnP2OpR7+RJebqGDCNVnlY="  verify="n9SUQ3w4x+YBggUqlN/e26lopaE2rCLmOZK9Cg2zRtc=" current="current" />
-                        <key public="61RxrG8CIOSDfcjLcq+y/dhhMgeyY9I7NdDZTaoQwUs="  verify="FhnIDQZ1XDOaspV4/k+ZADSe5IqkUQCWH53C42qC3XQ="/>
-                        <key public="0DThVjUslwgoZuclc0ueKZYl7r+4rfmUw2bWShyQYU0="  verify="wsvQ8HXjG3P4v9+xhnp1Nc8XhLCTb0WbK3cq9aOCHZk="/>
-                        <key public="QVXITMyfQLg5tVc+ElpVX0FAN3+/nv9nGZDUIVUbiwo="  verify="UZz4azAIqO2WiNMkgkgCMu38Sw8WEOco8C6y3R2Lyuk="/>
-                        <key public="8QHSSL2Hgsm6wfSFaFD+6ODW770Pr8+rdABwGKBo8WA="  verify="xQHkzmniUIDTCFWWOpA9tYzmlF+AmBHCPH5mMSZF+Bw="/>
-                        <key public="EaD4ufAdkRlW7psqAhL+DrGmIVQvR+R9DiaTKzoO4Eg="  verify="wkkDp9PZWj6Dq+65Xjs42zCwkz5BWJvzQt4TE9kIc7o="/>
-                        <key public="kTsf7ZKy0urSGklAxLJWbHOjFtCgFlXSEq4dHDl4GEw="  verify="A2bw4W8CNr2NXBsyDLIrobJh997u90ziaSX1HJTyJNA="/>
-                        <key public="HZGLPz9PukobSM6ALz7PxqBYunimLkqAoa2WwAGrDB8="  verify="gNz9z6ZOcXJgDm1BWbRrCkz4HWJ3EB4IKAO4u/imjTU="/>
-                        <key public="rYsglIKg2ZQf4yfmqjH70vaC0wCjO5mXAdHPwaWcOX4="  verify="1iC81pdum1JRgQ/9j9ceu5QsPVo5VpUjAmwY6LQPM+4="/>
-                </keys>
+        <user type="ness" nonce="R04rQis5hP2EfILpAGuU8Q==" tags="Hello World,test" public="rYsglIKg2ZQf4yfmqjH70vaC0wCjO5mXAdHPwaWcOX4="  verify="1iC81pdum1JRgQ/9j9ceu5QsPVo5VpUjAmwY6LQPM+4="/>
                 <!-- Here tags may be different for each type of user -->
         </user>
 </worm>
