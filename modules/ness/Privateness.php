@@ -3,6 +3,7 @@
 namespace modules\ness;
 
 use Base32\Base32;
+use internals\lib\Output;
 use modules\ness\lib\ness as ness;
 use modules\ness\interfaces\Storage;
 
@@ -147,10 +148,11 @@ class Privateness
     public function register(User $user)
     {
         $username = $user->getUsername();
-
+    
         if ($this->isMasterUser($username)) {
             if (empty($this->users[$username])) {
                 $ness = new ness();
+
                 $result = $ness->createAddr();
                 $addr = $result['addresses'][0];
 
@@ -198,6 +200,12 @@ class Privateness
     public function verifyUserId(string $authID, User $user)
     {
         $message = $this->host . '-' . $this->nonce . '-' . $user->getUsername() . '-' . $user->getNonce();
+        // echo $message; die();
+        // $secret_key = base64_decode("lZo9hnpOqOm/UBhII6ooK42fFyaV1wHJ8YXYPpWrTZs=");
+        // $verify_key = base64_decode($user->getVerify());
+        // $keypair = sodium_crypto_box_keypair_from_secretkey_and_publickey($secret_key, $verify_key);
+        // $alt_id = sodium_crypto_sign_detached($message, $keypair);
+        // echo Base32::encode($alt_id); die();
         return sodium_crypto_sign_verify_detached(Base32::decode($authID), $message, base64_decode($user->getVerify()));
     }
 

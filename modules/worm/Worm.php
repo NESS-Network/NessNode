@@ -25,16 +25,8 @@ class Worm {
         $type = (string) $xmlObject->user['type'];
         $nonce = (string) $xmlObject->user['nonce'];
         $tags = (string) $xmlObject->user['tags'];
-        $public_key = '';
-        $verify_key = '';
-
-        foreach ($xmlObject->user->keys->key as $key) 
-        {
-            if ( isset($key['current']) ) {
-                $public_key = (string) $key['public'];
-                $verify_key = (string) $key['verify'];
-            }
-        }
+        $public_key = (string) $xmlObject->user['public'];
+        $verify_key = (string) $xmlObject->user['verify'];
 
         $tags = explode(',', $tags);
 
@@ -92,6 +84,7 @@ class Worm {
         $tags = (string) $xmlObject->node['tags'];
         $public = (string) $xmlObject->node['public'];
         $verify = (string) $xmlObject->node['verify'];
+        $master = (string) $xmlObject->node['master-user'];
         $tariff = (float) $xmlObject->node['tariff'];
 
         $tags = explode(',', $tags);
@@ -103,6 +96,7 @@ class Worm {
             'tags' => $tags,
             'public' => $public,
             'verify' => $verify,
+            'master' => $master,
             'tariff' => $tariff
         ];
     }

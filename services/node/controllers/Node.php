@@ -6,6 +6,8 @@ use modules\emer\exceptions\EConnectionError;
 use modules\crypto\Crypto;
 use internals\lib\Output;
 use Base32\Base32;
+use modules\emer\Emer;
+use modules\emer\lib\Emercoin;
 use modules\ness\lib\ness;
 use modules\ness\Privateness;
 use modules\ness\lib\StorageJson;
@@ -32,6 +34,17 @@ class Node
         }
     }
 
+    public function userExists(string $username)
+    {
+        try {
+            $emer = new Emer();
+            $user = $emer->findUser($username);
+            Output::info(['exists' => (false !== $user)]);
+        } catch (EConnectionError $exception) {
+            Output::error('Can not connect to emercoin');
+        }
+    }
+
     public function services()
     {
         $services = require __DIR__ . '/../../../etc/services.php';
@@ -42,8 +55,8 @@ class Node
     {
         try {
             $pr = Creator::Privateness();
-            $user = $pr->findUser($username);
-
+            $user = $pr->findUser($username); 
+            
             if (false === $user) {
                 Output::error('User "' . $username . '" not found');
                 return false;
@@ -51,7 +64,7 @@ class Node
 
             // verify(user_public_key, “node.url-node.nonce-username-user.nonce”, authentication_id)
             $res = $pr->verifyUserId($id, $user);
-            
+
             if (true === $res) {
                 Output::message('User auth ID OK');
             } else {
@@ -193,7 +206,6 @@ class Node
                 }
 
                 $user = $pr->findUser($username);
-                // Output::data(['address' => $addr, 'shadowname' => $user->getShadowname()]);
                 $data = json_encode([
                     'address' => $user->getAddress(), 
                     'shadowname' => $user->getShadowname()
