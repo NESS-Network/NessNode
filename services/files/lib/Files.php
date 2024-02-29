@@ -154,8 +154,8 @@ class Files {
 
         foreach ($list as $filename) {
             $basename = basename($filename);
-            $filelist[$basename] = [
-                'id' => self::fileID($basename),
+            $filelist[self::fileID($basename)] = [
+                'filename' => $basename,
                 'size' => filesize($filename)
             ];
         }
