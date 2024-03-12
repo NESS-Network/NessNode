@@ -19,7 +19,8 @@ class Node
     public function info()
     {
         try {
-            Output::info(Privateness::nodeInfo());
+            $pr = Creator::Privateness();
+            Output::info($pr->nodeInfo());
         } catch (EConnectionError $exception) {
             Output::error('Can not connect to emercoin');
         }

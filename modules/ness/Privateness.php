@@ -535,12 +535,14 @@ class Privateness
     /**
      * All info about node from blockchain
      */
-    public static function nodeInfo(): array
+    public function nodeInfo(): array
     {
         $emer = new Emer();
         $services = require __DIR__ . '/../../etc/services.php';
-        $info = $services['node'];
+        $info['node'] = $services['node'];
         $info['emercoin'] = $emer->info();
+        $info['slots'] = self::slots();
+        $info['slots_free'] = self::slotsFree();
 
         return $info;
     }
