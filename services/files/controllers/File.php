@@ -287,6 +287,74 @@ class File {
         }
     }
 
+    public function rewrite()
+    {
+        try {
+            if (empty($_POST['username'])) {
+                Output::error('Param username not found');
+                return false;
+            }
+
+            if (empty($_POST['filename'])) {
+                Output::error('Param filename not found');
+                return false;
+            }
+
+            $shadowname = $_POST['username'];
+            $filename = $_POST['filename'];
+
+            $pr = Creator::Privateness();
+            $user = $pr->findShadow($shadowname);
+
+            if (false === $user) {
+                Output::error('User "' . $shadowname . '" not found');
+                return false;
+            }
+
+            if (!$pr->isActive($user->getUsername())) {
+                Output::error('User "' . $user->getUsername() . '" is Inactive');
+                return false;
+            }
+
+            if (Files::quota($user->getUsername())['quota']['free'] <= 0) {
+                Output::error('All disk space quota used');
+                return false;
+            }
+
+            $res = $pr->verifyUser2way($_POST['data'], $_POST['sig'], $user);
+
+            if (true === $res) {
+                $filename = $pr->decryptUser2way($filename);
+                $oldfilename = $filename;
+                $filename = Files::filename($filename);
+
+                if (false === $filename) {
+                    Output::error("Invalid filename '$oldfilename'");
+                    return false;
+                }
+
+                $fullname = Files::checkUserPath($user->getUsername()) . '/' . $filename;
+
+                if (file_exists($fullname)) {
+                    unlink($fullname);
+                }
+
+                $file = fopen($fullname, 'w'); 
+                fclose($file);
+                $data = json_encode(['size' => 0, 'id' => Files::fileID($filename)]);
+                $sig = '';
+    
+                $pr->encryptUser2way($data, $sig, $user);
+                Output::encrypted($data, $sig);
+            } else {
+                Output::error('User auth ID FAILED');
+            }
+        } catch (\Throwable $e) {
+            Output::error($e->getMessage());
+            return false;
+        }
+    }
+
     public function remove()
     {
         try {
