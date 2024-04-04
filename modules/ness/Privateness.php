@@ -538,10 +538,10 @@ class Privateness
     public function nodeInfo(): array
     {
         $emer = new Emer();
-        $services = require __DIR__ . '/../../etc/services.php';
-        $files = require __DIR__ . '/../../config/files.php';
-        $info['node'] = $services['node'];
-        $info['files']['quota'] = $files['quota'];
+        // $services = require __DIR__ . '/../../etc/services.php';
+        // $files = require __DIR__ . '/../../config/files.php';
+        // $info['node'] = $services['node'];
+        // $info['files']['quota'] = $files['quota'];
         $info['emercoin'] = $emer->info();
         $info['slots'] = self::slots();
         $info['slots_free'] = self::slotsFree();

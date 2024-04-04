@@ -5,7 +5,7 @@ return [
     'nodes' => ['\services\node\controllers\Node', 'nodes'],
     'exist/(.+)' => ['\services\node\controllers\Node', 'userExists'],
     'services' => ['\services\node\controllers\Node', 'services'],
-    'man' => ['\services\node\controllers\Node', 'man'],
+    'about' => ['\services\node\controllers\Node', 'about'],
     'pub' => ['\services\node\controllers\Node', 'pub'],
     'verify' => ['\services\node\controllers\Node', 'verify'],
     'slots' => ['\services\node\controllers\Node', 'slots'],

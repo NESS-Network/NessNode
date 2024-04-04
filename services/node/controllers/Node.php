@@ -48,7 +48,19 @@ class Node
 
     public function services()
     {
-        $services = require __DIR__ . '/../../../etc/services.php';
+        $files = require __DIR__ . '/../../../config/files.php';
+        
+        $services = [
+            'prng' => [
+                'version' => '0.1 demo',
+                'quota' => 0
+            ],
+            'files' => [
+                'version' => '0.1 demo',
+                'quota' => $files['quota']
+            ],
+        ];
+
         Output::data($services);
     }
 
@@ -444,8 +456,8 @@ class Node
         return true;
     }
 
-    public function man()
+    public function about()
     {
-        Output::text(file_get_contents(__DIR__ . '/../../../etc/manual.txt'));
+        Output::text(file_get_contents(__DIR__ . '/../../../etc/about.txt'));
     }
 }
