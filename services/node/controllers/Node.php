@@ -53,7 +53,6 @@ class Node
         $services = [
             'prng' => [
                 'version' => '0.1 demo',
-                'quota' => 0
             ],
             'files' => [
                 'version' => '0.1 demo',
@@ -327,8 +326,9 @@ class Node
 
             if (true === $res) {
                 $userinfo = $pr->userinfo($user->getUsername());
+                $nodeinfo = $pr->nodeInfo();
 
-                $data = json_encode(['userinfo' => $userinfo]);
+                $data = json_encode(['userinfo' => $userinfo, 'nodeinfo' => $nodeinfo]);
                 $sig = '';
     
                 $pr->encryptUser2way($data, $sig, $user);

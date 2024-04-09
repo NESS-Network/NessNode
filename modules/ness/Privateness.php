@@ -60,19 +60,19 @@ class Privateness
         $this->tariff = (int) $this->node_config['tariff'];
 
         if (empty($this->tariff)) {
-            $this->tariff  = 24;
+            $this->tariff  = 1;
         }
 
         $this->period = (int) $this->node_config['period'];
 
         if (empty($this->period)) {
-            $this->period  = 7200;
+            $this->period  = 720;
         }
 
         $this->delta = (int) $this->node_config['delta'];
 
         if (empty($this->delta)) {
-            $this->delta  = 200;
+            $this->delta  = 120;
         }
 
         $this->users = $this->storage->readUsers();
@@ -545,6 +545,9 @@ class Privateness
         $info['emercoin'] = $emer->info();
         $info['slots'] = self::slots();
         $info['slots_free'] = self::slotsFree();
+        $info['tariff'] = $this->tariff;
+        $info['period'] = $this->period;
+        $info['delta'] = $this->delta;
 
         return $info;
     }

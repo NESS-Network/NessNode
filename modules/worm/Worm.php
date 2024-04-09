@@ -69,6 +69,18 @@ class Worm {
             return false;
         }
 
+        if (empty( $xmlObject->node['services'])) {
+            return false;
+        }
+
+        if (empty( $xmlObject->node['tariff'])) {
+            return false;
+        }
+
+        if (empty( $xmlObject->node['master-user'])) {
+            return false;
+        }
+
         return true;
     }
 
@@ -81,19 +93,19 @@ class Worm {
         $type = (string) $xmlObject->node['type'];
         $url = (string) $xmlObject->node['url'];
         $nonce = (string) $xmlObject->node['nonce'];
-        $tags = (string) $xmlObject->node['tags'];
+        $services = (string) $xmlObject->node['services'];
         $public = (string) $xmlObject->node['public'];
         $verify = (string) $xmlObject->node['verify'];
         $master = (string) $xmlObject->node['master-user'];
         $tariff = (float) $xmlObject->node['tariff'];
 
-        $tags = explode(',', $tags);
+        $services = explode(',', $services);
 
         return [
             'type' => $type,
             'url' => $url,
             'nonce' => $nonce,
-            'tags' => $tags,
+            'services' => $services,
             'public' => $public,
             'verify' => $verify,
             'master' => $master,
