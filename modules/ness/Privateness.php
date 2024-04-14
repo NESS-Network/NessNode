@@ -184,6 +184,23 @@ class Privateness
                 return false;
             }
         }
+    } 
+    
+    function registerUsername(string $username): bool
+    {
+        if (empty($this->users[$username])) {
+            $ness = new ness();
+
+            $result = $ness->createAddr();
+            $addr = $result['addresses'][0];
+            $shadowname = md5($username . "+$this->host+$this->nonce+123456789:" . time());
+            $this->storage->writeUser($username, $addr, 0, $this->getRandomCounterHours(), $shadowname);
+            $this->users = $this->storage->readUsers();
+            file_put_contents(__DIR__ . '/../../log/log.txt', json_encode($this->users));
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

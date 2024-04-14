@@ -6,6 +6,7 @@ use modules\ness\exceptions\ENessDirNotWritable;
 
 class StorageJson implements Storage {
 
+    private array $config;
     private string $users_addr_file;
     private string $users_payments_file;
 
@@ -83,6 +84,7 @@ class StorageJson implements Storage {
 
         try {
             file_put_contents($this->users_addr_file, json_encode($users));
+            chmod($this->users_addr_file, 0666);
         } catch (\Throwable $th) {
             throw new ENessDirNotWritable();
         }

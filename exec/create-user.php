@@ -16,10 +16,15 @@ if ($argc >= 2) {
 
     if (!$pr->userExists($username)) {
         formatPrintLn(['green'], '......');
-        $pr->getUserAddress($username);
-        formatPrint(['green'], 'User ');
-        formatPrint(['b', 'green'], $username);
-        formatPrintLn(['green'], ' created OK');
+        if ($pr->registerUsername($username) ) {
+            formatPrint(['green'], 'User ');
+            formatPrint(['b', 'green'], $username);
+            formatPrintLn(['green'], ' created OK');
+        } else {
+            formatPrint(['red'], 'User ');
+            formatPrint(['b', 'red'], $username);
+            formatPrintLn(['red'], ' already exists');
+        }
     } else {
         formatPrint(['red'], 'User ');
         formatPrint(['b', 'red'], $username);
