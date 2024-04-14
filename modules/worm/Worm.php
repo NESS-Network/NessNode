@@ -90,8 +90,15 @@ class Worm {
         $xml = preg_replace('/”/i', '"', $xml);
         $xmlObject = simplexml_load_string($xml);
 
+        $network = "inet";
+
         $type = (string) $xmlObject->node['type'];
         $url = (string) $xmlObject->node['url'];
+
+        if (!empty($xmlObject->node['network'])) {
+            $network = (string) $xmlObject->node['network'];
+        }
+
         $nonce = (string) $xmlObject->node['nonce'];
         $services = (string) $xmlObject->node['services'];
         $public = (string) $xmlObject->node['public'];
@@ -104,6 +111,7 @@ class Worm {
         return [
             'type' => $type,
             'url' => $url,
+            'network' => $network,
             'nonce' => $nonce,
             'services' => $services,
             'public' => $public,

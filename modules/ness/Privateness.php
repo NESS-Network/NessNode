@@ -37,6 +37,9 @@ class Privateness
     private string $host;
     private string $nonce;
 
+    private string $network;
+    private array $services;
+
     private string $private;
     private string $public;
     private string $verify;
@@ -80,6 +83,9 @@ class Privateness
 
         $this->host = $this->node_config['url'];
         $this->nonce = $this->node_config['nonce'];
+
+        $this->network = $this->node_config['network'];
+        $this->services = $this->node_config['services'];
 
         $this->private = $this->node_config['private'];
         $this->public = $this->node_config['public'];
@@ -538,10 +544,10 @@ class Privateness
     public function nodeInfo(): array
     {
         $emer = new Emer();
-        // $services = require __DIR__ . '/../../etc/services.php';
-        // $files = require __DIR__ . '/../../config/files.php';
-        // $info['node'] = $services['node'];
-        // $info['files']['quota'] = $files['quota'];
+        $files = require __DIR__ . '/../../config/files.php';
+        $info['files']['quota'] = $files['quota'];
+        $info['network'] = $this->network;
+        $info['services'] = $this->services;
         $info['emercoin'] = $emer->info();
         $info['slots'] = self::slots();
         $info['slots_free'] = self::slotsFree();
