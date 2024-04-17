@@ -10,6 +10,7 @@ namespace modules\ness;
 class User
 {
     private string $username;
+    private string $shadowname;
     private string $address;
     private string $type;
     private string $nonce;

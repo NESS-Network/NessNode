@@ -142,7 +142,7 @@ class Privateness
      */
     private function generateShadowname(User $user): string
     {
-        return md5($user->getUsername() . "-$this->host-$this->nonce-" . $user->getNonce() . ': ' . time());
+        return md5($user->getUsername() . "-$this->host-$this->nonce-$this->private" . $user->getNonce() . ': ' . time());
     }
 
     /**
@@ -369,6 +369,7 @@ class Privateness
 
         $result = $ness->getBalance($this->users[$username]['addr']);
         $balance = $result['confirmed'];
+        $balance['coins'] = $balance['coins'] / 1000000;
         $balance['fee'] = $ness->getFee($balance['hours']);
         $balance['available'] = $balance['hours'] - $balance['fee'];
 
@@ -535,7 +536,6 @@ class Privateness
     {
         $ness = new ness();
         $addr = $this->users[$username]['addr'];
-
         $ness->send($addr, $to_addr, $coins, $hours);
 
         return true;

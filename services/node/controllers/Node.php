@@ -217,7 +217,7 @@ class Node
                     Output::error('User olready joined');
                 }
 
-                $user = $pr->findUser($username);
+                // $user = $pr->findUser($username);
                 $data = json_encode([
                     'address' => $user->getAddress(), 
                     'shadowname' => $user->getShadowname()
@@ -397,9 +397,8 @@ class Node
 
             $pr->withdrawUser($user->getUsername(), $coins, $hours, $to_addr);
 
-            // Output::message("Signature check OK\nDecrypt OK");
-
-            $data = "The user " . $user->getUsername() . " withdrawed $coins coins and $hours hours to $to_addr";
+            $data = "The user " . $user->getUsername() . " withdrawed " . number_format($coins, 6) . " coins and $hours hours to $to_addr";
+            // $data = json_encode(ness::$output, JSON_PRETTY_PRINT);
             $sig = '';
 
             $pr->encryptUser2way($data, $sig, $user);

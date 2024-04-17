@@ -13,12 +13,32 @@ Devblog https://ness-main-dev.medium.com/
 
 ## Instalation
 
+### Generate node config file (node.key.json) using [Privateness tools](  https://github.com/NESS-Network/PrivatenessTools)
+ * Generate node key (keygen.py)
+ * Register node in blockchain (`key.py nvs` and `key.py worm`)
+
+### WEB server stuff
  * Apache
  * PHP 8.0+ with *php-curl* and *php-xml* mods
+ * composer
+
+### Install Emercoin
  * Emercoin daemon with JsonRPC connection configured in `~/.emercoin/emercoin.conf` and `modules/emer/config/emercoin.php`
+
+### Install PRNG server
  * Clone PRNG from https://github.com/NESS-Network/PyUHEPRNG and run `python server.py` to launch random number generator
  * Change systemd configuration for apache in `/lib/systemd/apache2.service` or in `/lib/systemd/system/httpd.service` change the `PrivateTmp=false` to make `/tmp/*` directory readable
- * RUN `exec/cron.php` every hour using cron utility, this will pay needed fee from every user address to master user address (every hour payment).
+
+### Install ness node
+ * Clone Ness Service Node from https://github.com/NESS-Network/NessNode
+ * ``` cd services/node && composer install && composer update ```
+ * ``` cd services/prng && composer install && composer update ```
+ * ``` cd services/files && composer install && composer update ```
+ * RUN `php exec/make-config.php`
+ * RUN `php exec/register-master-user.php`
+ * RUN `php exec/self-test.php`
+ ### Configure CRON
+ * RUN `php exec/cron.php` every hour using cron utility, this will pay needed fee from every user address to master user address (every hour payment).
 
 ## Services
 
@@ -193,5 +213,5 @@ Usage: `php test.php <username>`pay for single hour (similar as exec/cron.php bu
 * nonce - salt
 
 ## Links
-* [Ness node tester]( [https://github.com/NESS-Network/NessNodeTester](https://github.com/NESS-Network/NessNodeTester))
+* [Privateness tools](  https://github.com/NESS-Network/PrivatenessTools)
 * [Dev blog](  https://ness-main-dev.medium.com)

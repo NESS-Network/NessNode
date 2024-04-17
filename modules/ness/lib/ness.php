@@ -110,7 +110,7 @@ class ness {
     }
 BODY;
 
-    try {
+    // try {
 
       $ch = curl_init("http://" . self::$host . ":" . self::$port . "/api/v1/wallet/transaction");
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -138,8 +138,6 @@ BODY;
 
       $body = '{"rawtx": "' . $encoded_transaction . '"}';
 
-      // var_dump($output); 
-      // die();
 
       $ch = curl_init("http://" . self::$host . ":" . self::$port . "/api/v1/injectTransaction");
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -148,11 +146,35 @@ BODY;
       curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
       self::$output = curl_exec($ch);
 
-    } catch (\Throwable $th) {
-      self::$output = $th->getMessage();
-      return false;
-    }
+      $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+      if (200 !== $httpcode) {
+        $msg = explode(' - ', self::$output, 2);
+
+        if(2 === count($msg)) {
+          $msg = $msg[1];
+        } else {
+          $msg = $msg[0];
+        }
+
+        throw new \Exception($msg);
+      }
+
+    // } catch (\Throwable $th) {
+    //   self::$output = $th->getMessage();
+    //   return false;
+    // }
 
     return true;
+  }
+
+  public function getWallets(): array {
+    self::$output = file_get_contents("http://" . self::$host . ":" . self::$port . "/api/v1/wallets");
+
+    if (empty(self::$output)) {
+      throw new \Exception("Privateness daemon is not running");
+    }
+
+    return json_decode(self::$output, true);
   }
 }
