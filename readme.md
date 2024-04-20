@@ -27,7 +27,7 @@ Devblog https://ness-main-dev.medium.com/
 #### Register Master User Key on Blockchain
  * `./key nvs master01.key.json` to show NVS key
  * `./key worm master01.key.json` to show NVS value (in <WORM> format)
- * Make blockchain NVS record in [emercoin](https://emercoin.com/en/for-coinholders#download) wallet or in NVS exchange [here] (https://nvs.ness.cx)
+ * Make blockchain NVS record in [emercoin](https://emercoin.com/en/for-coinholders#download) wallet or in NVS exchange [here](https://nvs.ness.cx)
 
 #### Generate Node Key
 `./keygen node http://my-node.net 10 master01 "prng,files" inet 100`
@@ -40,7 +40,7 @@ Devblog https://ness-main-dev.medium.com/
 #### Register Node Key on Blockchain
  * `./key nvs http%3A%2F%2Fmy-node.net.key.json` to show NVS key
  * `./key worm http%3A%2F%2Fmy-node.net.key.json` to show NVS value (in <WORM> format)
- * Make blockchain NVS record in [emercoin](https://emercoin.com/en/for-coinholders#download) wallet or in NVS exchange [here] (https://nvs.ness.cx)
+ * Make blockchain NVS record in [emercoin](https://emercoin.com/en/for-coinholders#download) wallet or in NVS exchange [here](https://nvs.ness.cx)
 
 ### Privateness Service Node
 
@@ -50,11 +50,11 @@ Devblog https://ness-main-dev.medium.com/
  * Install composer package manager for php
 
 #### Install Privateness Daemon / Wallet
- * Detailed instructions [here] (https://privateness-network.gitbook.io/privateness-network/desktop-wallet)
+ * Detailed instructions [here](https://privateness-network.gitbook.io/privateness-network/desktop-wallet)
  * *x86-64* or *ARM64* version needed
 
 #### Install Emercoin Daemon
- * Install Emercoin wallet/daemon from [here] (https://emercoin.com/en/for-coinholders#download)
+ * Install Emercoin wallet/daemon from [here](https://emercoin.com/en/for-coinholders#download)
  * Configure JsonRPC connection in `~/.emercoin/emercoin.conf`
 
  example configuration:
