@@ -165,7 +165,7 @@ BODY;
     //   return false;
     // }
 
-    return true;
+    return self::$output;
   }
 
   public function getWallets(): array {

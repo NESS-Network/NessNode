@@ -217,7 +217,7 @@ class Node
                     Output::error('User olready joined');
                 }
 
-                // $user = $pr->findUser($username);
+                $user = $pr->findUser($username);
                 $data = json_encode([
                     'address' => $user->getAddress(), 
                     'shadowname' => $user->getShadowname()
@@ -328,7 +328,18 @@ class Node
                 $userinfo = $pr->userinfo($user->getUsername());
                 $nodeinfo = $pr->nodeInfo();
 
-                $data = json_encode(['userinfo' => $userinfo, 'nodeinfo' => $nodeinfo]);
+                if (!$pr->isMasterUser($user->getUsername())) {
+                    unset($nodeinfo['emercoin']);
+                }
+
+                $data = ['userinfo' => $userinfo, 'nodeinfo' => $nodeinfo];
+
+                if ($pr->isMasterUser($user->getUsername())) {
+                    $data['users'] = $pr->getUsersDetailed();
+                    $data['payments'] = $pr->payments($user->getUsername());
+                }
+
+                $data = json_encode($data);
                 $sig = '';
     
                 $pr->encryptUser2way($data, $sig, $user);

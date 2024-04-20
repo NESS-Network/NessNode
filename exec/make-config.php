@@ -58,10 +58,10 @@ if ($argc == 8) {
     $filename = $directory . '/node.json';
     $data = [
         "services" => $node_data['services'],
-        "delta" => "120",
+        "delta" => "4",
         "master-user" => $node_data['master-user'],
         "nonce" => $node_data['nonce'],
-        "period" => "720",
+        "period" => "24",
         "private" => $node_data['keys']['private'],
         "public" => $node_data['keys']['public'],
         "slots" => $user_slots,

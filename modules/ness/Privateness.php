@@ -134,6 +134,31 @@ class Privateness
     }
 
     /**
+     * Full users list
+     *
+     * @return string
+     */
+    public function getUsersDetailed()
+    {
+        $users = $this->users;
+
+        foreach ($users as $username => $user) {
+            unset ($users[$username]['shadowname']);
+
+            if (isset($this->payments[$username])) {
+                $users[$username]['payments'] = $this->payments[$username];
+            } else {
+                $users[$username]['payments'] = [];
+            }
+
+            $users[$username]['active'] = $this->isActive($username);
+
+        }
+
+        return $users;
+    }
+
+    /**
      * Generate users shadowname
      * Shadowname = MD5(Username-node.url-node.nonce-username-user.nonce)
      * 
@@ -414,8 +439,25 @@ class Privateness
         $userinfo['balance'] = $this->balance($username);
         $userinfo['joined'] = $this->joined($username);
         $userinfo['is_active'] = $this->isActive($username);
+        $userinfo['is_master'] = $this->isMasterUser($username);
 
         return $userinfo;
+    }
+
+    /**
+     * Payments
+     *
+     * @param string $username
+     * @return array
+     */
+    public function payments(string $username): array
+    {
+        // Check user existance
+        if (!isset($this->users[$username]) || !isset($this->users[$username]['addr'])) {
+            throw new EUserDontExist($username);
+        }
+
+        return $this->payments;
     }
 
     /**
@@ -443,9 +485,24 @@ class Privateness
             return false;
         }
 
+        if ($this->isMasterUser($username)) {
+            return true;
+        }
+
         $balance = $this->balance($username);
         
         return (($this->node_config['tariff'] * $this->users[$username]['counter'] + 1) <= $balance['hours']);
+    }
+
+    /**
+     * Is user Active or is User a Master User
+     *
+     * @param string $username
+     * @return boolean
+     */
+    public function IsActiveOrMaster(string $username): bool
+    {
+        return $this->isActive($username) || $this->isMasterUser($username);
     }
 
     /**
@@ -506,12 +563,12 @@ class Privateness
             $coin_hours = $this->node_config['tariff'] * $counter;
             $txid = $ness->send($addr, $master_addr, 0.000001, $coin_hours);
 
+            $this->storage->writePayment($username, date('Y-m-d H:i:s'), $counter, $coin_hours, $txid);
+            self::$output = ness::$output;
+
             $this->storage->writeUser($username, '', 0, $this->getRandomCounterHours());
             $this->users = $this->storage->readUsers();
-
-            $this->storage->writePayment($username, date('Y-m-d H:i:s'), $counter, $coin_hours, $txid);
             $this->payments = $this->storage->readPayments();
-            self::$output = ness::$output;
 
             return true;
         } else {

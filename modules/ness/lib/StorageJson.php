@@ -84,7 +84,7 @@ class StorageJson implements Storage {
 
         try {
             file_put_contents($this->users_addr_file, json_encode($users));
-            chmod($this->users_addr_file, 0666);
+            // chmod($this->users_addr_file, 0555);
         } catch (\Throwable $th) {
             throw new ENessDirNotWritable();
         }
@@ -103,12 +103,12 @@ class StorageJson implements Storage {
     {
         $payments = $this->readPayments();
 
-        $payments[$username] = [
+        array_push($payments[$username], [
             'date' => $date, 
             'hours' => $hours, 
             'coin_hours_payed' => $coin_hours_payed, 
             'txid' => $txid
-        ];
+        ]);
 
         try {
             file_put_contents($this->users_payments_file, json_encode($payments));

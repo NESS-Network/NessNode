@@ -41,7 +41,7 @@ class Prng
                 return false;
             }
 
-            if (!$this->privateness->isActive($user->getUsername())) {
+            if (!$this->privateness->IsActiveOrMaster($user->getUsername())) {
                 Output::error('User "' . $username . '" is inactive');
                 return false;
             }
@@ -68,7 +68,7 @@ class Prng
                 return false;
             }
 
-            if (!$this->privateness->isActive($user->getUsername())) {
+            if (!$this->privateness->IsActiveOrMaster($user->getUsername())) {
                 Output::error('User "' . $username . '" is inactive');
                 return false;
             }
@@ -95,7 +95,7 @@ class Prng
                 return false;
             }
 
-            if (!$this->privateness->isActive($user->getUsername())) {
+            if (!$this->privateness->IsActiveOrMaster($user->getUsername())) {
                 Output::error('User "' . $username . '" is inactive');
                 return false;
             }
@@ -122,7 +122,7 @@ class Prng
                 return false;
             }
 
-            if (!$this->privateness->isActive($user->getUsername())) {
+            if (!$this->privateness->IsActiveOrMaster($user->getUsername())) {
                 Output::error('User "' . $username . '" is inactive');
                 return false;
             }
@@ -149,7 +149,7 @@ class Prng
                 return false;
             }
 
-            if (!$this->privateness->isActive($user->getUsername())) {
+            if (!$this->privateness->IsActiveOrMaster($user->getUsername())) {
                 Output::error('User "' . $username . '" is inactive');
                 return false;
             }
@@ -176,7 +176,7 @@ class Prng
                 return false;
             }
 
-            if (!$this->privateness->isActive($user->getUsername())) {
+            if (!$this->privateness->IsActiveOrMaster($user->getUsername())) {
                 Output::error('User "' . $username . '" is inactive');
                 return false;
             }

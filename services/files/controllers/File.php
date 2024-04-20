@@ -237,7 +237,7 @@ class File {
                 return false;
             }
 
-            if (!$pr->isActive($user->getUsername())) {
+            if (!$pr->IsActiveOrMaster($user->getUsername())) {
                 Output::error('User "' . $user->getUsername() . '" is Inactive');
                 return false;
             }
@@ -311,7 +311,7 @@ class File {
                 return false;
             }
 
-            if (!$pr->isActive($user->getUsername())) {
+            if (!$pr->IsActiveOrMaster($user->getUsername())) {
                 Output::error('User "' . $user->getUsername() . '" is Inactive');
                 return false;
             }
@@ -379,7 +379,7 @@ class File {
                 return false;
             }
 
-            if (!$pr->isActive($user->getUsername())) {
+            if (!$pr->IsActiveOrMaster($user->getUsername())) {
                 Output::error('User "' . $user->getUsername() . '" is Inactive');
                 return false;
             }
@@ -422,7 +422,7 @@ class File {
                 return false;
             }
 
-            if (!$pr->isActive($user->getUsername())) {
+            if (!$pr->IsActiveOrMaster($user->getUsername())) {
                 Output::error('User "' . $user->getUsername() . '" is Inactive');
                 return false;
             }
@@ -470,7 +470,7 @@ class File {
                 return false;
             }
 
-            if (!$pr->isActive($user->getUsername())) {
+            if (!$pr->IsActiveOrMaster($user->getUsername())) {
                 Output::error('User "' . $username . '" is Inactive');
                 return false;
             }

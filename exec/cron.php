@@ -13,4 +13,4 @@ $pr = new Privateness($json);
 
 $pr->payUsers();
 
-echo 'OK';
+echo "OK\n";

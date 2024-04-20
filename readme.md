@@ -18,19 +18,30 @@ Devblog https://ness-main-dev.medium.com/
  * Register node in blockchain (`key.py nvs` and `key.py worm`)
 
 ### WEB server stuff
- * Apache
+ * Apache with .htaccess
  * PHP 8.0+ with *php-curl* and *php-xml* mods
  * composer
 
 ### Install Emercoin
- * Emercoin daemon with JsonRPC connection configured in `~/.emercoin/emercoin.conf` and `modules/emer/config/emercoin.php`
+ * Emercoin daemon with JsonRPC connection configured in `~/.emercoin/emercoin.conf`
+
+ example configuration:
+ ```
+rpcuser=user
+rpcpassword=user
+rpcallowip=127.0.0.1
+rpcport=8332
+server=1
+daemon=1
+ ```
 
 ### Install PRNG server
- * Clone PRNG from https://github.com/NESS-Network/PyUHEPRNG and run `python server.py` to launch random number generator
+ * Clone PRNG `git clone https://github.com/NESS-Network/PyUHEPRNG`
  * Change systemd configuration for apache in `/lib/systemd/apache2.service` or in `/lib/systemd/system/httpd.service` change the `PrivateTmp=false` to make `/tmp/*` directory readable
+ * launch random number generator `python server.py`
 
 ### Install ness node
- * Clone Ness Service Node from https://github.com/NESS-Network/NessNode
+ * Clone Ness Service Node `git clone https://github.com/NESS-Network/NessNode`
  * ``` cd services/node && composer install && composer update ```
  * ``` cd services/prng && composer install && composer update ```
  * ``` cd services/files && composer install && composer update ```
