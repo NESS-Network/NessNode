@@ -49,11 +49,8 @@ Devblog https://ness-main-dev.medium.com/
  * Install PHP 8.0+ with *php-curl* and *php-xml* mods
  * Install composer package manager for php
 
-#### Install Privateness Daemon
- * `git clone https://github.com/NESS-Network/ness`
- * `cd ness`
- * Install all dependencies `go get github.com/skycoin/skycoin/cmd/...`
- * `./run-client.sh` or `./run-daemon.sh`
+#### Install Privateness Daemon / Wallet
+ * Detailed instructions [here] (https://privateness-network.gitbook.io/privateness-network/desktop-wallet)
 
 #### Install Emercoin Daemon
  * Install Emercoin wallet/daemon from [here] (https://emercoin.com/en/for-coinholders#download)
