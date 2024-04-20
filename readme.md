@@ -51,6 +51,7 @@ Devblog https://ness-main-dev.medium.com/
 
 #### Install Privateness Daemon / Wallet
  * Detailed instructions [here] (https://privateness-network.gitbook.io/privateness-network/desktop-wallet)
+ * *x86-64* or *ARM64* version needed
 
 #### Install Emercoin Daemon
  * Install Emercoin wallet/daemon from [here] (https://emercoin.com/en/for-coinholders#download)
