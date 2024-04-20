@@ -13,17 +13,51 @@ Devblog https://ness-main-dev.medium.com/
 
 ## Instalation
 
-### Generate node config file (node.key.json) using [Privateness tools](  https://github.com/NESS-Network/PrivatenessTools)
- * Generate node key (keygen.py)
- * Register node in blockchain (`key.py nvs` and `key.py worm`)
+### Privateness Tools
 
-### WEB server stuff
- * Apache with .htaccess
- * PHP 8.0+ with *php-curl* and *php-xml* mods
- * composer
+#### Install Privateness Tools
+`git clone https://github.com/NESS-Network/PrivatenessTools`
+`cd PrivatenessTools`
 
-### Install Emercoin
- * Emercoin daemon with JsonRPC connection configured in `~/.emercoin/emercoin.conf`
+#### Generate Master User Key
+`./keygen user master01 100` 
+ * `master01` master user name 
+ * `100` entrophy (as more as better)
+
+#### Register Master User Key on Blockchain
+ * `./key nvs master01.key.json` to show NVS key
+ * `./key worm master01.key.json` to show NVS value (in <WORM> format)
+ * Make blockchain NVS record in [emercoin](https://emercoin.com/en/for-coinholders#download) wallet or in NVS exchange [here](https://nvs.ness.cx)
+
+#### Generate Node Key
+`./keygen node http://my-node.net 10 master01 "prng,files" inet 100`
+ * `10` tariff 10 NCH per hour
+ * `master01` master user
+ * `"prng,files"` PRNG and FILES services
+ * `inet` internet network
+ * `100` entrophy (as more as better)
+
+#### Register Node Key on Blockchain
+ * `./key nvs http%3A%2F%2Fmy-node.net.key.json` to show NVS key
+ * `./key worm http%3A%2F%2Fmy-node.net.key.json` to show NVS value (in <WORM> format)
+ * Make blockchain NVS record in [emercoin](https://emercoin.com/en/for-coinholders#download) wallet or in NVS exchange [here](https://nvs.ness.cx)
+
+### Privateness Service Node
+
+#### Install Apache WEB server with PHP
+ * Install Apache with .htaccess enabled
+ * Install PHP 8.0+ with *php-curl* and *php-xml* mods
+ * Install composer package manager for php
+
+#### Install Privateness Daemon
+ * `git clone https://github.com/NESS-Network/ness`
+ * `cd ness`
+ * Install all dependencies `go get github.com/skycoin/skycoin/cmd/...`
+ * `./run-client.sh` or `./run-daemon.sh`
+
+#### Install Emercoin Daemon
+ * Install Emercoin wallet/daemon from [here] (https://emercoin.com/en/for-coinholders#download)
+ * Configure JsonRPC connection in `~/.emercoin/emercoin.conf`
 
  example configuration:
  ```
@@ -35,21 +69,44 @@ server=1
 daemon=1
  ```
 
-### Install PRNG server
+#### Install PRNG server
  * Clone PRNG `git clone https://github.com/NESS-Network/PyUHEPRNG`
  * Change systemd configuration for apache in `/lib/systemd/apache2.service` or in `/lib/systemd/system/httpd.service` change the `PrivateTmp=false` to make `/tmp/*` directory readable
- * launch random number generator `python server.py`
+ * launch random number generator `cd PyUHEPRNG` and `python server.py`
 
-### Install ness node
- * Clone Ness Service Node `git clone https://github.com/NESS-Network/NessNode`
+#### Install Node
+
+##### CLONE REPO
+ * Clone Ness Service Node `git clone https://github.com/NESS-Network/NessNode`and `cd NessNode`
+
+##### Install Composer stuff
  * ``` cd services/node && composer install && composer update ```
  * ``` cd services/prng && composer install && composer update ```
  * ``` cd services/files && composer install && composer update ```
- * RUN `php exec/make-config.php`
- * RUN `php exec/register-master-user.php`
- * RUN `php exec/self-test.php`
- ### Configure CRON
- * RUN `php exec/cron.php` every hour using cron utility, this will pay needed fee from every user address to master user address (every hour payment).
+##### make config
+ * Copy node JSON key to server with node
+ * `php exec/make-config.php http%3A%2F%2Fmy-node.net.key.json wallet_id.wlp password user user 10 10Gb` (node.key.json wallet_id wallet_password emc_user emc_password user_slots disk_usage_quota)
+##### register master user
+ * Copy node master-user key to server with node
+ * RUN `php exec/register-master-user.php master01.key.json` (reg-master-user.php master_user.key.json)
+##### self-test
+ * RUN `php exec/self-test.php` if it's OK it should be all green
+
+#### Configure CRON
+ * RUN `php exec/cron.php` if it's OK it will output OK
+ * configure CRON utility to run `php $NESS_NODE_DIRECTORY/exec/cron.php` every hour.
+
+### Check
+ * Move to Privateness Tools directory
+ #### Update nodes list
+  `./nodes-update node https://node.ness.cx`
+ #### Select node
+  `./node select http%3A%2F%2Fmy-node.net`
+ #### Show about page
+  `./node about http%3A%2F%2Fmy-node.net`
+ #### Show userinfo
+  `./node userinfo`
+
 
 ## Services
 
@@ -63,7 +120,7 @@ All data is sent in HTTP POST or GET request and returned in JSON format
  * `http://node-url/node/info` display all info about node
  * `http://node-url/node/services` output all available services
  * `http://node-url/node/nodes` display all nodes found in blockchain
- * `http://node-url/node/man`display manual
+ * `http://node-url/node/about`display about page
  * `http://node-url/node/pub`display node public key (encryption key)
  * `http://node-url/node/verify`display node verify key (sign/verify key)
  * `http://node-url/node/test/auth/username/auth-id`test authentication by Auth ID
