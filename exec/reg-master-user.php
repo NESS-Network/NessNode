@@ -22,6 +22,7 @@ if ($argc == 2) {
 
     $ness_dir = posix_getpwuid(getmyuid())['dir'] . "/.ness";
     $data_dir = $ness_dir . "/data";
+    $log_dir = $ness_dir . "/log";
     $users_config_file = $data_dir . "/users.json";
     $users_data = [];
 
@@ -31,6 +32,10 @@ if ($argc == 2) {
 
     if (!file_exists($data_dir)) {
         mkdir($data_dir);
+    }
+
+    if (!file_exists($log_dir)) {
+        mkdir($log_dir);
     }
 
     $config = require __DIR__ . '/../config/ness.php';
