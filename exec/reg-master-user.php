@@ -28,8 +28,18 @@ if ($argc == 2) {
         $userdata = json_decode(file_get_contents($userkey_file), true);
     }
 
-    $users_config_file = posix_getpwuid(getmyuid())['dir'] . "/.ness/data/users.json";
+    $ness_dir = posix_getpwuid(getmyuid())['dir'] . "/.ness";
+    $data_dir = $ness_dir . "/data";
+    $users_config_file = $data_dir . "/users.json";
     $users_data = [];
+
+    if (file_exists($ness_dir)) {
+        mkdir($ness_dir);
+    }
+
+    if (file_exists($data_dir)) {
+        mkdir($data_dir);
+    }
 
     if (file_exists($users_config_file)) {
         $users_data = json_decode(file_get_contents($users_config_file), true);

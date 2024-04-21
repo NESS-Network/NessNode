@@ -86,7 +86,7 @@ daemon=1
  * `php exec/make-config.php http%3A%2F%2Fmy-node.net.key.json wallet_id.wlp password user user 10 10Gb` (node.key.json wallet_id wallet_password emc_user emc_password user_slots disk_usage_quota)
 ##### register master user
  * Copy node master-user key to server with node
- * RUN `php exec/register-master-user.php master01.key.json` (reg-master-user.php master_user.key.json)
+ * RUN `php exec/reg-master-user.php master01.key.json` (reg-master-user.php master_user.key.json)
 ##### self-test
  * RUN `php exec/self-test.php` if it's OK it should be all green
 
