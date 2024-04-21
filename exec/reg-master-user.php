@@ -13,14 +13,6 @@ error_reporting(E_ALL);
 if ($argc == 2) {
     $userkey_file = $argv[1];
 
-    $config = require __DIR__ . '/../config/ness.php';
-    $node_config = require __DIR__ . '/../config/node.php';
-
-    ness::$host = $config['host'];
-    ness::$port = $config['port'];
-    ness::$wallet_id = $config['wallet_id'];
-    ness::$password = $config['password'];
-
     if (!file_exists($userkey_file)) {
         formatPrintLn(['red'], "File $userkey_file does not exist");
         exit(1);
@@ -40,6 +32,14 @@ if ($argc == 2) {
     if (!file_exists($data_dir)) {
         mkdir($data_dir);
     }
+
+    $config = require __DIR__ . '/../config/ness.php';
+    $node_config = require __DIR__ . '/../config/node.php';
+
+    ness::$host = $config['host'];
+    ness::$port = $config['port'];
+    ness::$wallet_id = $config['wallet_id'];
+    ness::$password = $config['password'];
 
     if (file_exists($users_config_file)) {
         $users_data = json_decode(file_get_contents($users_config_file), true);
