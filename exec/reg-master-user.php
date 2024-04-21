@@ -33,11 +33,11 @@ if ($argc == 2) {
     $users_config_file = $data_dir . "/users.json";
     $users_data = [];
 
-    if (file_exists($ness_dir)) {
+    if (!file_exists($ness_dir)) {
         mkdir($ness_dir);
     }
 
-    if (file_exists($data_dir)) {
+    if (!file_exists($data_dir)) {
         mkdir($data_dir);
     }
 
