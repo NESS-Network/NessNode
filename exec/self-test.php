@@ -11,8 +11,6 @@ use modules\ness\lib\ness;
 ini_set('display_errors', 'yes');
 error_reporting(E_ALL - E_DEPRECATED - E_WARNING);
 
-$config = require __DIR__ . '/../config/ness.php';
-
 // Config test
 formatPrintLn(['green', 'b'], ' *** Config test');
 $directory = posix_getpwuid(getmyuid())['dir'];
@@ -59,12 +57,22 @@ if (file_exists($filename)) {
     formatPrintLn(['red'], "File $filename NOT FOUND");
 }
 
+// Config load
+
+$config = require __DIR__ . '/../config/ness.php';
+$node = require __DIR__ . '/../config/ness.php';
+
+$nodefile = $directory . "/.ness/node.json";
+$nodedata = json_decode(file_get_contents($nodefile), true);
+$url = $nodedata['url'] . '/node/nodes';
+$master = $nodedata['master-user'];
+
 // EMC test
 formatPrintLn(['green', 'b'], ' *** EMC test');
 
 try {
     $emer = new Emer();
-    $user = $emer->findUser('master');
+    $user = $emer->findUser($master);
     formatPrintLn(['green'], "Emercoin OK");
 } catch (EConnectionError $exception) {
     formatPrintLn(['red'], "Emercoin connection ERROR");
@@ -94,7 +102,7 @@ $usersfile = $directory . "/.ness/data/users.json";
 if (file_exists($usersfile)) {
     $users_data = json_decode(file_get_contents($usersfile), true);
 
-    if (isset($users_data['master'])) {
+    if (isset($users_data[$master])) {
         formatPrintLn(['green'], "Master user FOUND");
     } else {
         formatPrintLn(['red'], "Master user NOT FOUND");
@@ -105,10 +113,6 @@ if (file_exists($usersfile)) {
 
 // Ping test
 formatPrintLn(['green', 'b'], ' *** Ping test');
-
-$nodefile = $directory . "/.ness/node.json";
-$nodedata = json_decode(file_get_contents($nodefile), true);
-$url = $nodedata['url'] . '/node/nodes';
 
 try {
     $contents = file_get_contents($url);
