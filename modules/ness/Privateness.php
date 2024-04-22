@@ -295,7 +295,7 @@ class Privateness
      * @param string $data
      * @param string $node_private
      * @param string $node_pub
-     * @return string|false
+     * @return ?string
      */
     public static function decrypt2way(string $data, string $node_private, string $node_pub)
     {
@@ -654,7 +654,7 @@ class Privateness
     /**
      * Find node in blockchain
      */
-    public static function nodesFind(string $node_name): array|bool
+    public static function nodesFind(string $node_name)
     {
         $emer = new Emer();
 
@@ -688,7 +688,7 @@ class Privateness
     /**
      * Find user in blockchain
      */
-    public static function usersFind(string $username): array|bool
+    public static function usersFind(string $username)
     {
         $emer = new Emer();
 

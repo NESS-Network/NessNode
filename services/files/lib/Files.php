@@ -142,7 +142,7 @@ class Files {
         return false;
     }
 
-    public static function listFiles (string $username): array|bool 
+    public static function listFiles (string $username)
     {
         $dir = self::checkUserPath($username);
         $list = glob($dir . '/*.*');
@@ -163,7 +163,7 @@ class Files {
         return $filelist;
     }
 
-    public static function fileinfo (string $username, string $filename): array|bool 
+    public static function fileinfo (string $username, string $filename)
     {
         $userpath = self::checkUserPath($username);
 

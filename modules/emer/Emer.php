@@ -25,7 +25,7 @@ class Emer
         Emercoin::$port = $this->config['port'];
     }
 
-    public function info(): array
+    public function info()
     {
         try {
             return Emercoin::getinfo();
@@ -39,7 +39,7 @@ class Emer
         }
     }
 
-    public function findUser(string $username): ?array
+    public function findUser(string $username)
     {
         try {
             /** @var array $user  */
@@ -88,7 +88,7 @@ class Emer
         }
     }
 
-    public function listNodes(): array
+    public function listNodes()
     {
         try {
             /** @var array $nodes  */
@@ -120,7 +120,7 @@ class Emer
         }
     }
 
-    public function listUsers(): array
+    public function listUsers()
     {
         try {
             /** @var array $nousersdes  */
