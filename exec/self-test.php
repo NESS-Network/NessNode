@@ -122,6 +122,7 @@ try {
         formatPrintLn(['green'], "Ping OK");
     } else {
         formatPrintLn(['red'], "Ping failed (result error)");
+        echo $contents;
     }
 
 } catch (Exception $exception) {
