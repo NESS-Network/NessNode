@@ -39,7 +39,7 @@ class Emer
         }
     }
 
-    public function findUser(string $username): array|false
+    public function findUser(string $username): ?array
     {
         try {
             /** @var array $user  */
