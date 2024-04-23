@@ -9,6 +9,13 @@ use \modules\ness\lib\ness as ness;
 ini_set('display_errors', 'yes');
 error_reporting(E_ALL);
 
+$hdf = __DIR__ . '/../homedir';
+
+if (file_exists($hdf)) {
+    $homedir = file_get_contents($hdf);
+} else {
+    $homedir = posix_getpwuid(getmyuid())['dir'];
+}
 
 if ($argc == 2) {
     $userkey_file = $argv[1];
@@ -20,7 +27,7 @@ if ($argc == 2) {
         $userdata = json_decode(file_get_contents($userkey_file), true);
     }
 
-    $ness_dir = posix_getpwuid(getmyuid())['dir'] . "/.ness";
+    $ness_dir = $homedir . "/.ness";
     $data_dir = $ness_dir . "/data";
     $log_dir = $ness_dir . "/log";
     $users_config_file = $data_dir . "/users.json";

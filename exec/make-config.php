@@ -7,6 +7,14 @@ error_reporting(E_ALL);
 
 $homedir = posix_getpwuid(getmyuid())['dir'];
 
+if ('/root' === $homedir) {
+    $homedir = '/home/ness';
+
+    if (!file_exists($homedir)) {
+        mkdir($homedir);
+    }
+}
+
 file_put_contents(__DIR__ . '/../homedir', $homedir);
 
 if ($argc == 8) {
