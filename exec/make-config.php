@@ -17,7 +17,7 @@ if ('/root' === $homedir) {
     $directory = $homedir . "/.ness";
 }
 
-file_put_contents(__DIR__ . '/../homedir', $homedir);
+file_put_contents(__DIR__ . '/../homedir', $directory);
 
 if ($argc == 8) {
     $node_json = $argv[1];
