@@ -26,7 +26,7 @@ if ($argc == 8) {
     $user_slots = $argv[6];
     $disk_usage_quota = $argv[7];
 
-    $directory = posix_getpwuid(getmyuid())['dir'] . "/.ness";
+    $directory = $homedir . "/.ness";
 
     if (!file_exists($node_json)) {
         formatPrintLn(['red', 'b'], "File $node_json does not exist");
@@ -37,6 +37,8 @@ if ($argc == 8) {
         if (!mkdir($directory)) {
             formatPrintLn(['red', 'b'], "Error creating $directory directory");
             exit(1);
+        } else {
+            formatPrintLn(['green'], "Directory $directory created");
         }
     }
 
@@ -110,6 +112,8 @@ if ($argc == 8) {
 
     file_put_contents($filename, json_encode($data, JSON_PRETTY_PRINT));
     chmod($filename, 0644);
+
+    formatPrintLn(['green'], "Config files have been written to $directory");
 
 } else {
     formatPrintLn(['green', 'b'], 'Usage: ');
