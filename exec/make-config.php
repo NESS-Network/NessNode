@@ -5,6 +5,10 @@ require 'utils/format.php';
 ini_set('display_errors', 'yes');
 error_reporting(E_ALL);
 
+$homedir = posix_getpwuid(getmyuid())['dir'];
+
+file_put_contents(__DIR__ . '/../homedir', $homedir);
+
 if ($argc == 8) {
     $node_json = $argv[1];
     $wallet_id = $argv[2];

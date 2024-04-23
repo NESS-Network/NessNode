@@ -1,5 +1,11 @@
 <?php
-$homedir = posix_getpwuid(getmyuid())['dir'];
+$hdf = __DIR__ . '/../homedir';
+
+if (file_exists($hdf)) {
+    $homedir = file_get_contents($hdf);
+} else {
+    $homedir = posix_getpwuid(getmyuid())['dir'];
+}
  
 $filename_ness = $homedir . '/.ness/ness.json';
 $datadir = $homedir . '/.ness/data';
