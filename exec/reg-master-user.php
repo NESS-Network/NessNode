@@ -69,7 +69,7 @@ if ($argc == 2) {
 
     file_put_contents($users_config_file, json_encode($users_data, JSON_PRETTY_PRINT));
 
-    formatPrintLn(['green', 'b'], 'Master user created and registered in ~/.ness/data/users.json');
+    formatPrintLn(['green', 'b'], 'Master user created and registered in ' . $users_config_file);
 } else {
     formatPrintLn(['green', 'b'], 'Usage: ');
     formatPrintLn(['green'], 'php reg-master-user.php user.key.json');
