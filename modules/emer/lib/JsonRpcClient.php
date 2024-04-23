@@ -154,23 +154,23 @@ class JsonRpcClient {
         self::$output[] = '***** End Of responce *****';
     }
     
-		$responce = json_decode($responce,true);
+		$resp = json_decode($responce,true);
 		//var_dump($responce);
 		curl_close($ch);
 		
 		// final checks and return
 		if (!$this->notification) {
 			// check
-			if ($responce['id'] != $currentId) {
+			if ($resp['id'] != $currentId) {
 				var_dump($responce);
-				throw new \Exception('Incorrect response id (request id: '.$currentId.', response id: '.$responce['id'].')');
+				throw new \Exception('Incorrect response id (request id: '.$currentId.', response id: '.$resp['id'].')');
 			}
-			if (!is_null($responce['error'])) {
-        jsonRPCClient::$error = $responce['error'];
-				throw new \Exception('Request error: '.$responce['error']['message']);
+			if (!is_null($resp['error'])) {
+        jsonRPCClient::$error = $resp['error'];
+				throw new \Exception('Request error: '.$resp['error']['message']);
 			}
 			
-			return $responce['result'];
+			return $resp['result'];
 			
 		} else {
 			return true;
