@@ -28,6 +28,7 @@ if (file_exists($filename)) {
     formatPrintLn(['green'], "File $filename OK");
 } else {
     formatPrintLn(['red'], "File $filename NOT FOUND");
+    exit(1);
 }
 
 $filename = $ness_dir . "/ness.json";
@@ -35,6 +36,7 @@ if (file_exists($filename)) {
     formatPrintLn(['green'], "File $filename OK");
 } else {
     formatPrintLn(['red'], "File $filename NOT FOUND");
+    exit(1);
 }
 
 $filename = $ness_dir . "/node.json";
@@ -42,6 +44,7 @@ if (file_exists($filename)) {
     formatPrintLn(['green'], "File $filename OK");
 } else {
     formatPrintLn(['red'], "File $filename NOT FOUND");
+    exit(1);
 }
 
 $filename = $ness_dir . "/files.json";
@@ -49,6 +52,7 @@ if (file_exists($filename)) {
     formatPrintLn(['green'], "File $filename OK");
 } else {
     formatPrintLn(['red'], "File $filename NOT FOUND");
+    exit(1);
 }
 
 $filename = $ness_dir . "/prng.json";
@@ -56,6 +60,7 @@ if (file_exists($filename)) {
     formatPrintLn(['green'], "File $filename OK");
 } else {
     formatPrintLn(['red'], "File $filename NOT FOUND");
+    exit(1);
 }
 
 $filename = $ness_dir . "/data/users.json";
@@ -63,6 +68,7 @@ if (file_exists($filename)) {
     formatPrintLn(['green'], "File $filename OK");
 } else {
     formatPrintLn(['red'], "File $filename NOT FOUND");
+    exit(1);
 }
 
 // Config load
