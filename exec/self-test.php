@@ -11,46 +11,55 @@ use modules\ness\lib\ness;
 ini_set('display_errors', 'yes');
 error_reporting(E_ALL - E_DEPRECATED - E_WARNING);
 
+$hdf = __DIR__ . '/../homedir';
+
+if (file_exists($hdf)) {
+    $ness_dir = file_get_contents($hdf);
+} else {
+    $homedir = posix_getpwuid(getmyuid())['dir'];
+    $ness_dir = $homedir . "/.ness";
+}
+
 // Config test
 formatPrintLn(['green', 'b'], ' *** Config test');
-$directory = posix_getpwuid(getmyuid())['dir'];
+$ness_dir = posix_getpwuid(getmyuid())['dir'];
 
-$filename = $directory . "/.ness/emer.json";
+$filename = $ness_dir . "/emer.json";
 if (file_exists($filename)) {
     formatPrintLn(['green'], "File $filename OK");
 } else {
     formatPrintLn(['red'], "File $filename NOT FOUND");
 }
 
-$filename = $directory . "/.ness/ness.json";
+$filename = $ness_dir . "/ness.json";
 if (file_exists($filename)) {
     formatPrintLn(['green'], "File $filename OK");
 } else {
     formatPrintLn(['red'], "File $filename NOT FOUND");
 }
 
-$filename = $directory . "/.ness/node.json";
+$filename = $ness_dir . "/node.json";
 if (file_exists($filename)) {
     formatPrintLn(['green'], "File $filename OK");
 } else {
     formatPrintLn(['red'], "File $filename NOT FOUND");
 }
 
-$filename = $directory . "/.ness/files.json";
+$filename = $ness_dir . "/files.json";
 if (file_exists($filename)) {
     formatPrintLn(['green'], "File $filename OK");
 } else {
     formatPrintLn(['red'], "File $filename NOT FOUND");
 }
 
-$filename = $directory . "/.ness/prng.json";
+$filename = $ness_dir . "/prng.json";
 if (file_exists($filename)) {
     formatPrintLn(['green'], "File $filename OK");
 } else {
     formatPrintLn(['red'], "File $filename NOT FOUND");
 }
 
-$filename = $directory . "/.ness/data/users.json";
+$filename = $ness_dir . "/data/users.json";
 if (file_exists($filename)) {
     formatPrintLn(['green'], "File $filename OK");
 } else {
@@ -62,7 +71,7 @@ if (file_exists($filename)) {
 $config = require __DIR__ . '/../config/ness.php';
 $node = require __DIR__ . '/../config/ness.php';
 
-$nodefile = $directory . "/.ness/node.json";
+$nodefile = $ness_dir . "/node.json";
 $nodedata = json_decode(file_get_contents($nodefile), true);
 $url = $nodedata['url'] . '/node/nodes';
 $master = $nodedata['master-user'];
@@ -97,7 +106,7 @@ formatPrintLn(['green'], "Privateness OK");
 
 // Master user
 formatPrintLn(['green', 'b'], ' *** Master user test');
-$usersfile = $directory . "/.ness/data/users.json";
+$usersfile = $ness_dir . "/data/users.json";
 
 if (file_exists($usersfile)) {
     $users_data = json_decode(file_get_contents($usersfile), true);
