@@ -4,33 +4,33 @@ $hdf = __DIR__ . '/../homedir';
 if (file_exists($hdf)) {
     $homedir = file_get_contents($hdf);
 } else {
-    $homedir = posix_getpwuid(getmyuid())['dir'];
+    $homedir = posix_getpwuid(getmyuid())['dir'] . "/.ness";
 }
  
-$filename_ness = $homedir . '/.ness/ness.json';
-$datadir = $homedir . '/.ness/data';
-$logdir = $homedir . '/.ness/log';
+$filename_ness = $homedir . '/ness.json';
+$datadir = $homedir . '/data';
+$logdir = $homedir . '/log';
 $filename_users = $datadir . '/users.json';
 $filename_payments = $datadir . '/payments.json';
 
 if (!file_exists($filename_ness)) {
-    throw new \Error("File '~/.ness/ness.json' does not exist !");
+    throw new \Error("File '$homedir/ness.json' does not exist !");
 }
 
 if (!file_exists($datadir)) {
-    throw new \Error("Directory '~/.ness/data' does not exist !");
+    throw new \Error("Directory '$homedir/data' does not exist !");
 }
 
 if (!is_writeable($datadir)) {
-    throw new \Error("Directory '~/.ness/data' is not writable !");
+    throw new \Error("Directory '$homedir/data' is not writable !");
 }
 
 if (!file_exists($logdir)) {
-    throw new \Error("File '~/.ness/log' does not exist !");
+    throw new \Error("File '$homedir/log' does not exist !");
 }
 
 if (!is_writeable($logdir)) {
-    throw new \Error("Directory '~/.ness/log' is not writable !");
+    throw new \Error("Directory '$homedir/log' is not writable !");
 }
 
 $ness_config = json_decode(file_get_contents($filename_ness), true);
