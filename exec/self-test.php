@@ -22,7 +22,6 @@ if (file_exists($hdf)) {
 
 // Config test
 formatPrintLn(['green', 'b'], ' *** Config test');
-$ness_dir = posix_getpwuid(getmyuid())['dir'];
 
 $filename = $ness_dir . "/emer.json";
 if (file_exists($filename)) {
