@@ -8,11 +8,13 @@ error_reporting(E_ALL);
 $homedir = posix_getpwuid(getmyuid())['dir'];
 
 if ('/root' === $homedir) {
-    $homedir = '/home/ness';
+    $directory = '/home/ness';
 
-    if (!file_exists($homedir)) {
-        mkdir($homedir);
+    if (!file_exists($directory)) {
+        mkdir($directory);
     }
+} else {
+    $directory = $homedir . "/.ness";
 }
 
 file_put_contents(__DIR__ . '/../homedir', $homedir);
@@ -25,8 +27,6 @@ if ($argc == 8) {
     $emc_password = $argv[5];
     $user_slots = $argv[6];
     $disk_usage_quota = $argv[7];
-
-    $directory = $homedir . "/.ness";
 
     if (!file_exists($node_json)) {
         formatPrintLn(['red', 'b'], "File $node_json does not exist");
