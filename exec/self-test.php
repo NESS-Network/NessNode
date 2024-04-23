@@ -87,6 +87,7 @@ formatPrintLn(['green', 'b'], ' *** EMC test');
 try {
     $emer = new Emer();
     $user = $emer->findUser($master);
+    $nodes = $emer->listNodes();
     formatPrintLn(['green'], "Emercoin OK");
 } catch (EConnectionError $exception) {
     formatPrintLn(['red'], "Emercoin connection ERROR");
