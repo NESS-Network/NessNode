@@ -1,12 +1,10 @@
 <?php
+$hdf = __DIR__ . '/../../../homedir';
 
-// return [
-//     'files' => [
-//         'seed' => '/tmp/seed.txt',
-//         'seedb' => '/tmp/seed-big.txt',
-//         'numbers' => '/tmp/numbers.json',
-//         'numbersb' => '/tmp/numbers-big.json',
-//     ]
-// ];
+if (file_exists($hdf)) {
+    $homedir = file_get_contents($hdf);
+} else {
+    $homedir = posix_getpwuid(getmyuid())['dir'] . "/.ness";
+}
 
-return json_decode(file_get_contents(posix_getpwuid(getmyuid())['dir'] . '/.ness/prng.json'), true);
+return json_decode( file_get_contents($homedir . '/prng.json'), true);
