@@ -3,6 +3,7 @@
 namespace modules\emer;
 
 use modules\emer\lib\Emercoin;
+use modules\emer\lib\JsonRpcClient;
 use modules\emer\exceptions\EConnectionError;
 use modules\emer\exceptions\EUserNotFound;
 use modules\emer\exceptions\ENodeNotFound;
@@ -51,10 +52,10 @@ class Emer
             $message = $exception->getMessage();
             if (strpos($message, 'Can\'t connect to') !== false) {
                 throw new EConnectionError($this->config, $message);
-            // } elseif (strpos($message, 'failed to read from name DB') !== false) {
-                // throw new EUserNotFound($username);
-            // } else {
-            //     throw new \Exception($message);
+            } elseif (strpos($message, 'failed to read from name DB') !== false) {
+                throw new EUserNotFound($username);
+            } else {
+                throw new \Exception($message);
             }
 
             return false;

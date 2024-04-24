@@ -6,6 +6,7 @@ use \modules\ness\Privateness;
 use \modules\ness\lib\StorageJson;
 use \modules\emer\Emer;
 use \modules\emer\exceptions\EConnectionError;
+use \modules\emer\exceptions\EUserNotFound;
 use modules\ness\lib\ness;
 
 ini_set('display_errors', 'yes');
@@ -86,11 +87,14 @@ formatPrintLn(['green', 'b'], ' *** EMC test');
 
 try {
     $emer = new Emer();
-    $user = $emer->findUser($master);
     $nodes = $emer->listNodes();
-    formatPrintLn(['green'], "Emercoin OK");
+    formatPrintLn(['green'], "Nodes list OK");
+    $user = $emer->findUser($master);
+    formatPrintLn(['green'], "Master user found");
 } catch (EConnectionError $exception) {
     formatPrintLn(['red'], "Emercoin connection ERROR");
+} catch (EUserNotFound $exception) {
+    formatPrintLn(['red'], "Master user not found");
 }
 
 // Ness test
