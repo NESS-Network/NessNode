@@ -141,7 +141,9 @@ try {
     $prng = new PrngModel();
     $numbers = $prng->numbers();
     
-    print_r($numbers);
+    if (count($numbers)) {
+        formatPrintLn(['green'], "PRNG OK");
+    }
 
 } catch (Exception $exception) {
     formatPrintLn(['red'], "PRNG failed");
