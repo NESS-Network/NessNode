@@ -45,9 +45,9 @@ Devblog https://ness-main-dev.medium.com/
 ### Privateness Service Node
 
 #### Install Apache WEB server with PHP
- * Install Apache with .htaccess enabled
+ * Install Apache with .htaccess enabled, check that "AllowOverride all" directive is present in apache config file
  * Install PHP 8.0+ with *php-curl* and *php-xml* mods
- * Install composer package manager for php
+ * Install [composer](https://getcomposer.org/download/) package manager for php
 
 #### Install Privateness Daemon / Wallet
  * Detailed instructions [here](https://privateness-network.gitbook.io/privateness-network/desktop-wallet)
@@ -89,6 +89,7 @@ daemon=1
  * RUN `php exec/reg-master-user.php master01.key.json` (reg-master-user.php master_user.key.json)
 ##### self-test
  * RUN `php exec/self-test.php` if it's OK it should be all green
+ * Open $NODE_URL/node/about page, it shold display service node logo
 
 #### Configure CRON
  * RUN `php exec/cron.php` if it's OK it will output OK
