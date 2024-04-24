@@ -5,9 +5,11 @@ require 'utils/format.php';
 use \modules\ness\Privateness;
 use \modules\ness\lib\StorageJson;
 use \modules\emer\Emer;
+use \modules\emer\lib\JsonRpcClient;
 use \modules\emer\exceptions\EConnectionError;
 use \modules\emer\exceptions\EUserNotFound;
 use modules\ness\lib\ness;
+use \services\prng\models\Prng as PrngModel;
 
 ini_set('display_errors', 'yes');
 error_reporting(E_ALL - E_DEPRECATED - E_WARNING);
@@ -85,12 +87,14 @@ $master = $nodedata['master-user'];
 // EMC test
 formatPrintLn(['green', 'b'], ' *** EMC test');
 
+JsonRpcClient::$debug = False;
+
 try {
     $emer = new Emer();
     $nodes = $emer->listNodes();
     formatPrintLn(['green'], "Nodes list OK");
     $user = $emer->findUser($master);
-    formatPrintLn(['green'], "Master user found");
+    formatPrintLn(['green'], "Master user FOUND");
 } catch (EConnectionError $exception) {
     formatPrintLn(['red'], "Emercoin connection ERROR");
 } catch (EUserNotFound $exception) {
@@ -128,6 +132,19 @@ if (file_exists($usersfile)) {
     }
 } else {
     formatPrintLn(['red'], "File $usersfile NOT FOUND");
+}
+
+// PRNG test
+formatPrintLn(['green', 'b'], ' *** PRNG test');
+
+try {
+    $prng = new PrngModel();
+    $numbers = $prng->numbers();
+    
+    print_r($numbers);
+
+} catch (Exception $exception) {
+    formatPrintLn(['red'], "PRNG failed");
 }
 
 // Ping test

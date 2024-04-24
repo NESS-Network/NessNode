@@ -34,6 +34,13 @@ class JsonRpcClient {
   
   public static $error;
   public static $output;
+
+	/**
+	 * Debug state
+	 *
+	 * @var boolean
+	 */
+	public static $debug = false;
 	
 	/**
 	 * The server URL
@@ -152,13 +159,19 @@ class JsonRpcClient {
 		if (!$this->notification) {
 			// check
 			if ($responce['id'] != $currentId) {
-				print_r($this->url);
-				print_r(self::$output);
+				if (self::$debug) {
+					print_r($this->url);
+					print_r(self::$output);
+				}
+
 				throw new \Exception('Incorrect response id (request id: '.$currentId.', response id: '.$responce['id'].')');
 			}
 			if (!is_null($responce['error'])) {
-				print_r($this->url);
-				print_r(self::$output);
+				if (self::$debug) {
+					print_r($this->url);
+					print_r(self::$output);
+				}
+
 				throw new \Exception('Request error: '.$responce['error']['message']);
 			}
 			
