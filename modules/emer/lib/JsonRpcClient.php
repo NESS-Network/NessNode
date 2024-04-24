@@ -161,6 +161,7 @@ class JsonRpcClient {
 		if (!$this->notification) {
 			// check
 			if ($responce['id'] != $currentId) {
+				var_dump(self::$output);
 				throw new \Exception('Incorrect response id (request id: '.$currentId.', response id: '.$responce['id'].')');
 			}
 			if (!is_null($responce['error'])) {
