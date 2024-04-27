@@ -12,6 +12,7 @@ if ('/root' === $homedir) {
 
     if (!file_exists($directory)) {
         mkdir($directory);
+        chmod($directory, 0777);
     }
 } else {
     $directory = $homedir . "/.ness";
@@ -38,6 +39,7 @@ if ($argc == 8) {
             formatPrintLn(['red', 'b'], "Error creating $directory directory");
             exit(1);
         } else {
+            chmod($directory, 0777);
             formatPrintLn(['green'], "Directory $directory created");
         }
     }
