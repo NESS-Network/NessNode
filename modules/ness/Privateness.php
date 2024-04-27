@@ -394,7 +394,7 @@ class Privateness
 
         $result = $ness->getBalance($this->users[$username]['addr']);
         $balance = $result['confirmed'];
-        $balance['coins'] = $balance['coins'] / 1000000;
+        $balance['coins'] = number_format($balance['coins'] / 1000000, 6);
         $balance['fee'] = $ness->getFee($balance['hours']);
         $balance['available'] = $balance['hours'] - $balance['fee'];
 
