@@ -35,14 +35,17 @@ if ($argc == 2) {
 
     if (!file_exists($ness_dir)) {
         mkdir($ness_dir);
+        chmod($directory, 0777);
     }
 
     if (!file_exists($data_dir)) {
         mkdir($data_dir);
+        chmod($directory, 0777);
     }
 
     if (!file_exists($log_dir)) {
         mkdir($log_dir);
+        chmod($directory, 0777);
     }
 
     $config = require __DIR__ . '/../config/ness.php';
