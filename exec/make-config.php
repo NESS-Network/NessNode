@@ -100,6 +100,14 @@ if ($argc == 8) {
 
     file_put_contents($filename, json_encode($data, JSON_PRETTY_PRINT));
     chmod($filename, 0666);
+
+    $storage_dir = __DIR__ . "/../services/files/storage";
+
+    if (!file_exists($storage_dir)) {
+        mkdir($storage_dir);
+        chmod($filename, 0777);
+    }
+ 
     // prng
     $filename = $directory . '/prng.json';
     $data = [

@@ -166,3 +166,18 @@ try {
 } catch (Exception $exception) {
     formatPrintLn(['red'], "Ping failed (connection error)");
 }
+
+//File storage test
+$storage_dir = __DIR__ . "/../services/files/storage";
+
+if (!file_exists($storage_dir)) {
+    mkdir($storage_dir);
+    chmod($filename, 0777);
+}
+
+$perm = fileperms($storage_dir);
+if (! (0777 === ($perm & 0777)) ) {
+    formatPrintLn(['red'], "$storage_dir wrong rights (".decoct($perm).")");
+} else {
+    formatPrintLn(['green'], "$storage_dir rights 0777 OK");
+}
