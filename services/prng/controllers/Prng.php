@@ -157,7 +157,7 @@ class Prng
             $res = $this->privateness->verifyUserId($id, $user);
 
             if (true === $res) {
-                Output::data(['numbers' => $this->prng->numbers256i()]);
+                Output::data(['i256' => $this->prng->numbers256i()]);
             } else {
                 Output::error('User auth ID FAILED');
             }
@@ -184,7 +184,7 @@ class Prng
             $res = $this->privateness->verifyUserId($id, $user);
 
             if (true === $res) {
-                Output::data(['numbers' => $this->prng->numbers256h()]);
+                Output::data(['h256' => $this->prng->numbers256h()]);
             } else {
                 Output::error('User auth ID FAILED');
             }
