@@ -99,8 +99,7 @@ if ($argc == 8) {
     ];
 
     file_put_contents($filename, json_encode($data, JSON_PRETTY_PRINT));
-    chmod($filename, 0644);
-
+    chmod($filename, 0666);
     // prng
     $filename = $directory . '/prng.json';
     $data = [
