@@ -177,4 +177,32 @@ BODY;
 
     return json_decode(self::$output, true);
   }
+
+  public function createWallet(string $label, string $password, string $seed): array {
+    $responce = file_get_contents("http://" . self::$host . ":" . self::$port . "/api/v1/csrf");
+
+    if (empty($responce)) {
+      throw new \Exception("Privateness daemon is not running");
+    }
+
+    $responce = json_decode($responce, true);
+    $token = $responce["csrf_token"];
+
+    $fields = [
+      'seed' => $seed,
+      'type' => 'deterministic',
+      'label' => $label,
+      'encrypt' => true,
+      'password' => $password
+    ];
+
+    $ch = curl_init("http://" . self::$host . ":" . self::$port . "/api/v1/wallet/create");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array('X-CSRF-Token: '.$token));
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
+    self::$output = curl_exec($ch);
+
+    return json_decode(self::$output, true);
+  }
 }

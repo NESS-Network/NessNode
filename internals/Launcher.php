@@ -35,7 +35,7 @@ class Launcher {
         $this->service_path_string = implode(DIRECTORY_SEPARATOR, $this->service_path);
     }
 
-    public static function getInstance(iPatchResolver $patchResolver = null) {
+    public static function getInstance(?iPatchResolver $patchResolver = null) {
         if (empty(self::$instance)) {
             if (empty($patchResolver)) {
                 throw new \Exception('Class Launcher not initialised, you must set valid $patchResolver param.');

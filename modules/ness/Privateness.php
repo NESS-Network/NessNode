@@ -84,8 +84,18 @@ class Privateness
         $this->host = $this->node_config['url'];
         $this->nonce = $this->node_config['nonce'];
 
-        $this->network = $this->node_config['network'];
-        $this->services = $this->node_config['services'];
+        if (empty($this->node_config['network'])) {
+            $this->network = 'inet';
+        } else {
+            $this->network = $this->node_config['network'];
+        }
+
+        if (empty($this->node_config['services'])) {
+            $this->services = ['node','prng','files'];
+        } else {
+            $this->services = $this->node_config['services'];
+        }
+
 
         $this->private = $this->node_config['private'];
         $this->public = $this->node_config['public'];
@@ -641,7 +651,6 @@ class Privateness
         $result = [];
 
         $nodes = $emer->listNodes();
-        // var_dump($nodes);
         foreach ($nodes as $name => $value) {
             if (Worm::isNode($value)) {
                 $result[$name] = Worm::parseNode($value);
@@ -786,6 +795,19 @@ class Privateness
         foreach ($users as $username => $user) {
             $users[$username]['joined'] = $this->joined($username);   
             $users[$username]['is_active'] = $this->isActive($username);   
+        }
+
+        return $users;
+    }
+
+    public function listActiveUsers(): array
+    {
+        $users = $this->users;
+
+        foreach ($users as $username => $user) {
+            if ($this->joined($username) && $this->isActive($username)) {
+                $users[] = $user;
+            }
         }
 
         return $users;

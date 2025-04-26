@@ -1,6 +1,10 @@
 <?php
 namespace services\files\lib;
 
+use modules\ness\lib\ness;
+use modules\ness\Privateness;
+use modules\ness\Creator;
+
 use services\files\exceptions\ECantCreatePath;
 use services\files\exceptions\EConfigError;
 
@@ -36,8 +40,14 @@ class Files {
         return sha1($filename . self::loadConfig ()['salt']);
     }
 
+    public static function filePUB (string $shadowname, string $filename)
+    {
+        return \Base32\Base32::encode(hash('sha3-256', $shadowname . '-' . $filename, true));
+    }
+
     public static function translateQuota (string $quota): int 
     {
+        $quota = strtolower($quota);
         $quota_size = (int) $quota;
 
         if (0 === $quota_size) {
@@ -50,6 +60,8 @@ class Files {
             $quota_size = 1048576 * $quota_size;
         } elseif (strpos($quota, 'gb')) {
             $quota_size = 1073741824 * $quota_size;
+        } elseif (strpos($quota, 'tb')) {
+            $quota_size = 1099511627776 * $quota_size;
         }
 
         return $quota_size;
@@ -142,6 +154,27 @@ class Files {
         return false;
     }
 
+    public static function findFilePub (string $file_pub): array|bool
+    {
+        $pr = Creator::Privateness();
+        $users = $pr->listActiveUsers();
+
+        foreach ($users as $username => $user) {
+            if (!empty ($username)) {
+                $shadowname = $user['shadowname'];
+                $files = self::listFilesFull($username, $shadowname);
+
+                foreach ($files as $file) {
+                    if ($file_pub === $file['pub']) {
+                        return [$username, $file['name']];
+                    }
+                }
+            }
+        }
+        
+        return false;
+    }
+
     public static function listFiles (string $username)
     {
         $dir = self::checkUserPath($username);
@@ -156,6 +189,29 @@ class Files {
             $basename = basename($filename);
             $filelist[$basename] = [
                 'id' => self::fileID($basename),
+                'size' => filesize($filename)
+            ];
+        }
+
+        return $filelist;
+    }
+
+    public static function listFilesFull (string $username, string $shadowname)
+    {
+        $dir = self::checkUserPath($username);
+        $list = glob($dir . '/*.*');
+        $filelist = [];
+
+        if (false === $list) {
+            return false;
+        }
+
+        foreach ($list as $filename) {
+            $basename = basename($filename);
+            $filelist[$basename] = [
+                'id' => self::fileID($basename),
+                'name' => $basename,
+                'pub' => self::filePUB($shadowname, $basename),
                 'size' => filesize($filename)
             ];
         }

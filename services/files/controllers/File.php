@@ -459,62 +459,106 @@ class File {
         }
     }
 
-    public function pub(string $file_id, string $username, string $id)
+    // public function pub(string $file_id, string $username, string $id)
+    // {
+    //     try {
+    //         $pr = Creator::Privateness();
+    //         $user = $pr->findShadow($username);
+
+    //         if (false === $user) {
+    //             Output::error('User "' . $username . '" not found');
+    //             return false;
+    //         }
+
+    //         if (!$pr->IsActiveOrMaster($user->getUsername())) {
+    //             Output::error('User "' . $username . '" is Inactive');
+    //             return false;
+    //         }
+
+    //         $res = $pr->verifyAlternativeUserId($id, $user);
+
+    //         if (true === $res) {
+    //             $filename = Files::findFile($user->getUsername(), $file_id);
+
+    //             if (false === $filename) {
+    //                 Output::error("File $filename not found");
+    //                 // header("HTTP/1.1 404 Not Found");
+    //                 return false;
+    //             }
+
+    //             $fullname = Files::checkUserPath($user->getUsername()) . '/' . $filename;
+
+    //             $contentType = 'application/octet-stream';
+
+    //             try {
+    //                 // Note that this construct will still work if the client did not specify a Range: header
+    //                 $rangeHeader = \DaveRandom\Resume\get_request_header('Range');
+    //                 $rangeSet = \DaveRandom\Resume\RangeSet::createFromHeader($rangeHeader);
+                
+    //                 /** @var \DaveRandom\Resume\Resource $resource */
+    //                 $resource = new \DaveRandom\Resume\FileResource($fullname , $contentType);
+    //                 $servlet = new \DaveRandom\Resume\ResourceServlet($resource);
+                
+    //                 $servlet->sendResource($rangeSet);
+    //             } catch (\DaveRandom\Resume\InvalidRangeHeaderException $e) {
+    //                 header("HTTP/1.1 400 Bad Request");
+    //             } catch (\DaveRandom\Resume\UnsatisfiableRangeException $e) {
+    //                 header("HTTP/1.1 416 Range Not Satisfiable");
+    //             } catch (\DaveRandom\Resume\UnreadableFileException $e) {
+    //                 header("HTTP/1.1 500 Internal Server Error");
+    //             } catch (\DaveRandom\Resume\SendFileFailureException $e) {
+    //                 if (!headers_sent()) {
+    //                     header("HTTP/1.1 500 Internal Server Error");
+    //                 }
+                
+    //                 echo "An error occurred while attempting to send the requested resource: {$e->getMessage()}";
+    //             }
+    //         } else {
+    //             Output::error('User auth ID FAILED');
+    //         }
+    //     } catch (\Throwable $e) {
+    //         Output::error($e->getMessage());
+    //         return false;
+    //     }
+    // }
+
+    public function pub(string $pub_id)
     {
         try {
-            $pr = Creator::Privateness();
-            $user = $pr->findShadow($username);
+            $userfile = Files::findFilePub($pub_id);
 
-            if (false === $user) {
-                Output::error('User "' . $username . '" not found');
+            if (false === $userfile) {
+                Output::error("File $filename not found");
+                // header("HTTP/1.1 404 Not Found");
                 return false;
             }
 
-            if (!$pr->IsActiveOrMaster($user->getUsername())) {
-                Output::error('User "' . $username . '" is Inactive');
-                return false;
-            }
+            $fullname = Files::checkUserPath($userfile[0]) . '/' . $userfile[1];
 
-            $res = $pr->verifyAlternativeUserId($id, $user);
+            $contentType = 'application/octet-stream';
 
-            if (true === $res) {
-                $filename = Files::findFile($user->getUsername(), $file_id);
-
-                if (false === $filename) {
-                    Output::error("File $filename not found");
-                    // header("HTTP/1.1 404 Not Found");
-                    return false;
-                }
-
-                $fullname = Files::checkUserPath($user->getUsername()) . '/' . $filename;
-
-                $contentType = 'application/octet-stream';
-
-                try {
-                    // Note that this construct will still work if the client did not specify a Range: header
-                    $rangeHeader = \DaveRandom\Resume\get_request_header('Range');
-                    $rangeSet = \DaveRandom\Resume\RangeSet::createFromHeader($rangeHeader);
-                
-                    /** @var \DaveRandom\Resume\Resource $resource */
-                    $resource = new \DaveRandom\Resume\FileResource($fullname , $contentType);
-                    $servlet = new \DaveRandom\Resume\ResourceServlet($resource);
-                
-                    $servlet->sendResource($rangeSet);
-                } catch (\DaveRandom\Resume\InvalidRangeHeaderException $e) {
-                    header("HTTP/1.1 400 Bad Request");
-                } catch (\DaveRandom\Resume\UnsatisfiableRangeException $e) {
-                    header("HTTP/1.1 416 Range Not Satisfiable");
-                } catch (\DaveRandom\Resume\UnreadableFileException $e) {
+            try {
+                // Note that this construct will still work if the client did not specify a Range: header
+                $rangeHeader = \DaveRandom\Resume\get_request_header('Range');
+                $rangeSet = \DaveRandom\Resume\RangeSet::createFromHeader($rangeHeader);
+            
+                /** @var \DaveRandom\Resume\Resource $resource */
+                $resource = new \DaveRandom\Resume\FileResource($fullname , $contentType);
+                $servlet = new \DaveRandom\Resume\ResourceServlet($resource);
+            
+                $servlet->sendResource($rangeSet);
+            } catch (\DaveRandom\Resume\InvalidRangeHeaderException $e) {
+                header("HTTP/1.1 400 Bad Request");
+            } catch (\DaveRandom\Resume\UnsatisfiableRangeException $e) {
+                header("HTTP/1.1 416 Range Not Satisfiable");
+            } catch (\DaveRandom\Resume\UnreadableFileException $e) {
+                header("HTTP/1.1 500 Internal Server Error");
+            } catch (\DaveRandom\Resume\SendFileFailureException $e) {
+                if (!headers_sent()) {
                     header("HTTP/1.1 500 Internal Server Error");
-                } catch (\DaveRandom\Resume\SendFileFailureException $e) {
-                    if (!headers_sent()) {
-                        header("HTTP/1.1 500 Internal Server Error");
-                    }
-                
-                    echo "An error occurred while attempting to send the requested resource: {$e->getMessage()}";
                 }
-            } else {
-                Output::error('User auth ID FAILED');
+            
+                echo "An error occurred while attempting to send the requested resource: {$e->getMessage()}";
             }
         } catch (\Throwable $e) {
             Output::error($e->getMessage());

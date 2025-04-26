@@ -1,5 +1,7 @@
 data/*.*
 log/*.*
+in/*.*
+out/*.*
 *.json
 debug
 homedir

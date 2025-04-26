@@ -117,7 +117,7 @@ class Emer
                 throw new \Exception($message);
             }
 
-            return false;
+            return [];
         }
     }
 

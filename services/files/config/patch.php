@@ -10,5 +10,6 @@ return [
     'rewrite' => ['\services\files\controllers\File', 'rewrite'],
     'remove' => ['\services\files\controllers\File', 'remove'],
     'append/([^/]+)/([^/]+)/([^/]+)' => ['\services\files\controllers\File', 'append'],
-    'pub/([^/-]+)-([^/-]+)-([^/-]+)' => ['\services\files\controllers\File', 'pub'],
+    // 'pub/([^/-]+)-([^/-]+)-([^/-]+)' => ['\services\files\controllers\File', 'pub'],
+    'pub/([A-Z0-9=]+)' => ['\services\files\controllers\File', 'pub'],
 ];
