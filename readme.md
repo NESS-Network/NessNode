@@ -11,7 +11,7 @@ At the moment there are 3 services
 Devblog https://ness-main-dev.medium.com/
 
 
-## Instalation
+## Installation
 
 ### Privateness Tools
 
@@ -22,7 +22,7 @@ Devblog https://ness-main-dev.medium.com/
 #### Generate Master User Key
 `./keygen user master01 100` 
  * `master01` master user name 
- * `100` entrophy (as more as better)
+ * `100` entropy (as more as better)
 
 #### Register Master User Key on Blockchain
  * `./key nvs master01.key.json` to show NVS key
@@ -35,11 +35,11 @@ Devblog https://ness-main-dev.medium.com/
  * `master01` master user
  * `"prng,files"` PRNG and FILES services
  * `inet` internet network
- * `100` entrophy (as more as better)
+ * `100` entropy (as more as better)
 
 #### Register Node Key on Blockchain
- * `./key nvs http%3A%2F%2Fmy-node.net.key.json` to show NVS key
- * `./key worm http%3A%2F%2Fmy-node.net.key.json` to show NVS value (in <WORM> format)
+ * `./key nvs http://my-node.net.key.json` to show NVS key
+ * `./key worm http://my-node.net.key.json` to show NVS value (in <WORM> format)
  * Make blockchain NVS record in [emercoin](https://emercoin.com/en/for-coinholders#download) wallet or in NVS exchange [here](https://nvs.ness.cx)
 
 ### Privateness Service Node
@@ -60,21 +60,22 @@ Devblog https://ness-main-dev.medium.com/
  example configuration:
  ```
 rpcuser=user
-rpcpassword=user
+rpcpassword=rpcpassword
 rpcallowip=127.0.0.1
-rpcport=8332
+rpcport=6662
 server=1
 daemon=1
+emcdns=1
  ```
 
 #### Install PRNG server
  * Clone PRNG `git clone https://github.com/NESS-Network/PyUHEPRNG`
  * Change systemd configuration for apache in `/lib/systemd/apache2.service` or in `/lib/systemd/system/httpd.service` change the `PrivateTmp=false` to make `/tmp/*` directory readable
- * launch random number generator `cd PyUHEPRNG` and `python server.py`
+ * Launch random number generator `cd PyUHEPRNG` and `python server.py`
 
 #### Install Node
 
-##### CLONE REPO
+##### Clone Repo
  * Clone Ness Service Node `git clone https://github.com/NESS-Network/NessNode`and `cd NessNode`
 
 ##### Install Composer stuff
@@ -83,7 +84,7 @@ daemon=1
  * ``` cd services/files && composer install && composer update ```
 ##### make config
  * Copy node JSON key to server with node
- * `php exec/make-config.php http%3A%2F%2Fmy-node.net.key.json wallet_id.wlp password user user 10 10Gb` (node.key.json wallet_id wallet_password emc_user emc_password user_slots disk_usage_quota)
+ * `php exec/make-config.php http://my-node.net.key.json wallet_id.wlp password user user 10 10Gb` (node.key.json wallet_id wallet_password emc_user emc_password user_slots disk_usage_quota)
 ##### register master user
  * Copy node master-user key to server with node
  * RUN `php exec/reg-master-user.php master01.key.json` (reg-master-user.php master_user.key.json)
@@ -100,9 +101,9 @@ daemon=1
  #### Update nodes list
   `./nodes-update node https://node.ness.cx`
  #### Select node
-  `./node select http%3A%2F%2Fmy-node.net`
+  `./node select http://my-node.net`
  #### Show about page
-  `./node about http%3A%2F%2Fmy-node.net`
+  `./node about http://my-node.net`
  #### Show userinfo
   `./node userinfo`
 
