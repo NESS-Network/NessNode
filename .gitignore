@@ -5,3 +5,4 @@ out/*.*
 *.json
 debug
 homedir
+composer.phar
